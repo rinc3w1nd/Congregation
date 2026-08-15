@@ -74,14 +74,14 @@ Files: `src/narrative.js`.
 - [x] **Verify:** all 15 visions reachable (dev `?vision=id` preview); no
       vision fires twice in a run; ticker never repeats until pool exhausts
 
-## Phase 5 — Audio
+## Phase 5 — Audio ✅ (2026-08-15)
 
 Files: `src/audio.js`.
 
-- [ ] Layer stack per AUDIO.md; unlock on first tap; toggle persisted
-- [ ] Stage crossfades in sync with map; one-shots (whisper, convert, vision,
+- [x] Layer stack per AUDIO.md; unlock on first tap; toggle persisted
+- [x] Stage crossfades in sync with map; one-shots (whisper, convert, vision,
       inquiry duck, awakening glissando)
-- [ ] **Verify:** each stage adds exactly one layer (dev `?stage=` works with
+- [x] **Verify:** each stage adds exactly one layer (dev `?stage=` works with
       audio); toggling off silences within 2s; suspend on tab hide
 
 ## Phase 6 — Awakening & NG+ ✅ (2026-08-15)

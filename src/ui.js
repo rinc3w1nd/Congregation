@@ -307,6 +307,8 @@ var UI = (function () {
     $("folk-waiting").textContent = waiting > 0 ? waiting + " of Marrow Bay are not yet listening." : "All of Marrow Bay is listening.";
 
     // More
+    const at = $("audio-toggle");
+    if (at) at.textContent = "sound: " + (AUDIO.enabled() ? "on" : "off");
     $("stat-lifetime").textContent = fmt(state.lifetime);
     $("stat-inquiries").textContent = state.inquiries;
     $("stat-awakenings").textContent = state.awakenings;

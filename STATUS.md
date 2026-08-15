@@ -5,6 +5,23 @@ was verified, surprises, and the concrete next step.
 
 ---
 
+## 2026-08-15 — Phase 5 complete: the drone
+
+**Shipped**
+- `src/audio.js` per docs/AUDIO.md: five cumulative layers (ground drone +
+  seeded-noise surf with wave-lap LFO, detuned unease, 27.5Hz depth, formant
+  "aw" presence, choir triad + heartbeat), compressor + master ramps, surf
+  slows per stage and holds still at the Choir. One-shots: rate-limited
+  whisper noise-burst, convert blips (fifth added for grand tiers), vision
+  swell, Inquiry duck, 8s Awakening glissando → hard cut → stage-0 resume.
+- Preference persisted (`congregation-audio`); unlocks inside first tap;
+  suspends on tab hide; toggle label live in More.
+
+**Verified (browser, autoplay-relaxed Chromium)**
+- No ctx before first tap; running ctx + layer 1 after; 4 layers at stage
+  3, 5 at stage 4; toggle-off ramps master to 0 and persists "0"; whisper
+  spam and awaken() error-free.
+
 ## 2026-08-15 — Phases 4 + 6 complete: narrative layer and the Awakening
 
 **Shipped**
