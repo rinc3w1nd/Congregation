@@ -1,5 +1,12 @@
 {
-  "dependencies": {
-    "@playwright/test": "^1.62.1"
+  "name": "congregation-dev",
+  "private": true,
+  "description": "Dev-only test tooling for CONGREGATION. The shipped game (index.html + src/) has zero dependencies and no build step.",
+  "scripts": {
+    "test": "playwright test",
+    "sim": "node sim/run.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0"
   }
 }

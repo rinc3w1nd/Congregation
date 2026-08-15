@@ -5,6 +5,37 @@ was verified, surprises, and the concrete next step.
 
 ---
 
+## 2026-08-15 — Phase 8 complete: THE GAME SHIPS. All phases done.
+
+**Shipped**
+- Committed Playwright suite (`tests/`, `playwright.config.js`,
+  `package.json` dev-only): 12 specs consolidating every ad-hoc check —
+  engine (tap/buy/passive/save round-trip, 8h offline cap with report,
+  corrupt-save quarantine, double-confirm reset), economy (the sim runs AS
+  a test, Inquiry fires/claims/floors/seizes, reducers-only purchases),
+  town (element budget, window determinism, stage overrides, halos +
+  converted styling), narrative (visions fire once, beats, ticker cycle,
+  full Awakening → NG+ persistence), audio (unlock, 5 layers, toggle
+  persistence, one-shot safety). **12/12 green.**
+- README rewritten as a shipped-game page with both marquee screenshots.
+
+**Line-by-line audit vs. the concept lock — every MVP item ships:**
+engine/tick/big numbers/save/offline-report/reset ✓ · 5 tiers consuming
+downward on 1.1x-family curves ✓ (follower 1.10 / upper 1.13, a recorded
+deviation that the sim forced — see DECISIONS) · 31-building/5-district
+SVG town with 5 corruption stages, palette shifts, dark windows, tendrils,
+breathing UI at stage 4 ✓ · rotating Gazette going wrong per stage ✓ ·
+Eye/Inquiry with 1-Follower floor + Sheriff/Gazette counterplay rites ✓ ·
+three rite trees ✓ · 15 vision beats (14 milestones + finale) and 12 named
+notables ✓ · five-layer WebAudio drone, first-tap unlock, toggle ✓ ·
+pacing: first convert ~30s human, Acolyte 3.9m, humming 5.0m, Awakening
+41.4m optimal / 43.6m casual, first-5-minutes escalation at 4.2m ✓ ·
+NG+ permanent multiplier ✓.
+
+**The project is done to MVP.** Next session, if any: play-feel tuning
+from real human sessions, or items under "Deferred" (each needs a new
+decision first).
+
 ## 2026-08-15 — Phase 5 complete: the drone
 
 **Shipped**

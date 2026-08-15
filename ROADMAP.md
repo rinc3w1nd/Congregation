@@ -104,17 +104,17 @@ Files: `src/audio.js`.
 - [x] **Verify:** Lighthouse-style perf sanity (no long tasks from ambience;
       CSS-only animations), reduced-motion spot check
 
-## Phase 8 — Verification & handoff (the gate)
+## Phase 8 — Verification & handoff (the gate) ✅ (2026-08-15)
 
-- [ ] Line-by-line audit of this roadmap + all docs vs. the shipped code
-- [ ] `node sim/run.js` green at final constants; results table in
+- [x] Line-by-line audit of this roadmap + all docs vs. the shipped code
+- [x] `node sim/run.js` green at final constants; results table in
       ECONOMY.md refreshed to match
-- [ ] Interaction audit: reset, corrupt-save recovery, offline cap,
+- [x] Interaction audit: reset, corrupt-save recovery, offline cap,
       Inquiry floor, NG+ multiplier, save-version migration path stubbed
-- [ ] Playwright smoke suite (`tests/`): loads, tap earns, buy works, save
+- [x] Playwright smoke suite (`tests/`): loads, tap earns, buy works, save
       round-trips, stage override renders (dev-only npm, gitignored,
       mirroring the wallpaper studio's test posture)
-- [ ] README updated with play instructions + screenshot
+- [x] README updated with play instructions + screenshot
 
 ## Deferred / non-goals (do not do without a new decision)
 

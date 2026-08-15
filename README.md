@@ -4,43 +4,68 @@ You are a nameless thing beneath **Marrow Bay**, a quaint coastal town.
 Every tap is a whisper into a sleeper's dream. Whispers earn **Dread**.
 Dread converts townsfolk. The town — the centerpiece of the screen — visibly
 rots as your congregation grows, until you can afford the final rite:
-**the Awakening**.
+**the Awakening**. The town forgets; your Name persists.
 
 Cozy idle mechanics, escalating wrongness. The horror is in the pacing, not
 jump scares.
 
-**Status: in development — Phase 0 (design + economy + harness) complete;
-the playable engine begins in Phase 1.** See [ROADMAP.md](ROADMAP.md) and
-[STATUS.md](STATUS.md).
+| quaint | the Choir |
+|---|---|
+| ![Marrow Bay at stage 0](screenshots/quaint.png) | ![Marrow Bay at stage 4](screenshots/the-choir.png) |
 
-## Playing (once Phase 1 lands)
+## Play
 
-No build, no dependencies — open `index.html`, or:
+No build, no dependencies, no network — open `index.html` directly, or:
 
 ```bash
 python3 -m http.server 8000   # → http://localhost:8000
 ```
 
+Best on a phone-shaped window. Sound unlocks on your first whisper
+(toggleable under **More**). Progress saves locally and accrues while
+you're away (capped at 8 hours — dreams keep poorly past that).
+
+- **Flock** — Followers → Acolytes → Priests → Heralds → Avatars. Each tier
+  consumes the one below, plus Dread, and murmurs more back.
+- **Rites** — Whispers (tap power), Congregation (passive), Veils
+  (suspicion control).
+- **Folk** — twelve of Marrow Bay matter more than the rest. Their dreams
+  have doors. Converting them draws the **Eye**; at its widest, an Inquiry
+  comes.
+- Reach the fifth corruption stage, gather 120M Dread, and **stop
+  whispering**. NG+ begins immediately: each banked Name glyph is +25% to
+  all Dread, forever.
+
+A casual run reaches the Awakening in roughly 45 minutes — proven by
+simulation, not vibes (see below).
+
 ## Development
 
-This project is set up for long-horizon autonomous agentic development:
+Dependency-free, build-free static web: classic `<script>` files sharing one
+global scope (`src/balance.js → state → town → narrative → audio → ui →
+app`). All eight roadmap phases are complete and browser-verified.
 
-- [CLAUDE.md](CLAUDE.md) — the session operating manual (start here)
-- [ROADMAP.md](ROADMAP.md) — phases 1–8 with acceptance criteria
-- [STATUS.md](STATUS.md) — dated ledger of what's done and verified
-- [DECISIONS.md](DECISIONS.md) — locked design calls (append-only)
-- [docs/](docs/) — full design: [GDD](docs/GDD.md) ·
-  [Economy & Suspicion](docs/ECONOMY.md) · [Town & Corruption](docs/TOWN.md) ·
-  [Narrative](docs/NARRATIVE.md) · [Audio](docs/AUDIO.md) · [UI](docs/UI.md)
+- [CLAUDE.md](CLAUDE.md) — session operating manual (start here)
+- [ROADMAP.md](ROADMAP.md) · [STATUS.md](STATUS.md) · [DECISIONS.md](DECISIONS.md)
+- [docs/](docs/) — [GDD](docs/GDD.md) · [Economy & Suspicion](docs/ECONOMY.md) ·
+  [Town & Corruption](docs/TOWN.md) · [Narrative](docs/NARRATIVE.md) ·
+  [Audio](docs/AUDIO.md) · [UI](docs/UI.md)
 
-The economy is already real: [`src/balance.js`](src/balance.js) holds every
-constant and reducer, and the headless sim proves the pacing targets —
+**The economy is regression-tested.** Every constant and reducer lives in
+[`src/balance.js`](src/balance.js); the headless sim plays optimal and
+casual 45-minute runs through those exact reducers and exits non-zero if
+pacing or safety invariants drift:
 
 ```bash
-node sim/run.js   # simulates optimal + casual runs; non-zero exit on drift
+node sim/run.js       # pacing windows + invariants (no softlocks, caps, NG+)
 ```
 
-Current proven pacing: first Acolyte ~4 min, corruption stage 1 ~4 min,
-engine humming ~5 min, **the Awakening at ~42 min (optimal) / ~44 min
-(casual)**, banking the first Name glyph (+25%, permanent — the town
-forgets; your Name persists).
+**End-to-end tests** (dev-only tooling; `node_modules` never ships):
+
+```bash
+npm install           # @playwright/test
+npx playwright test   # 12 specs: engine, economy, town, narrative, audio
+```
+
+Dev URL hooks: `?stage=N` (force corruption visuals), `?grant=N` (dread),
+`?vision=id` (preview an overlay), `?dev=1` (element-count logging).
