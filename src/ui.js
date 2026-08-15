@@ -239,7 +239,7 @@ var UI = (function () {
   function renderSlow(state) {
     const rate = BAL.ratePerSec(state);
     $("rate").textContent = rate > 0 ? fmt(rate) + "/s — the town murmurs" : "the town sleeps";
-    $("stagename").textContent = STAGE_NAMES[BAL.corruptionStage(state)];
+    $("stagename").textContent = STAGE_NAMES[typeof APP !== "undefined" ? APP.visualStage() : BAL.corruptionStage(state)];
 
     // The Eye
     const o = Math.min(1, state.eye / BAL.EYE_MAX);

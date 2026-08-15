@@ -5,6 +5,31 @@ was verified, surprises, and the concrete next step.
 
 ---
 
+## 2026-08-15 — Phase 3 complete: Marrow Bay drawn, five stages live
+
+**Shipped**
+- `src/town.js`: all 31 buildings across the 5 districts as one 255-element
+  SVG (budget 1500), built once, restyled per stage. Per-kind silhouettes
+  (spire, clocktower, cannery stack, lighthouse, water tower, jetty with the
+  Child, terraces, chapel stones, quarry cut). Seeded jitter + seeded window
+  thresholds (fully deterministic, verified identical across reloads).
+- Stage treatments per docs/TOWN.md: windows darken on schedule (all lit in
+  accent at stage 4), gulls vanish at 1, smoke mirrors toward the bay,
+  clocktower runs then stops at 3:14, tide rises, boats go dead-calm
+  uniform, shoreline tendrils then webs, the Bore fades in with pulsing
+  rings, lighthouse beam sweeps lazy → hunting → fixed down into the Bore
+  (rotate(-82deg) scale(1.55), aimed empirically via screenshots).
+- Notable halos + converted-building window styling wired to TOWN.refresh.
+
+**Verified**
+- Screenshots of all five stages via Playwright/Chromium eyeballed; element
+  count 255; window determinism across reloads; ?stage override works; HUD
+  stage label follows the dev override; no page errors.
+
+**Surprises**
+- SVG beam geometry vs. screen intuition: aim the lighthouse by screenshot,
+  not by arithmetic. The dev `?stage=` hook made this a 3-minute loop.
+
 ## 2026-08-15 — Phases 1–2 complete: engine core + playable economy
 
 **Shipped**

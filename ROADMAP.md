@@ -47,17 +47,17 @@ Files: `index.html`, `src/style.css` (skeleton), `src/state.js`, `src/app.js`.
       at comparable timestamps (±20%); Inquiry fires when Eye maxed and
       Followers floor at 1
 
-## Phase 3 — The town
+## Phase 3 — The town ✅ (2026-08-15)
 
 Files: `src/town.js` (+ style.css stage palettes).
 
-- [ ] Layout table for all 31 buildings (TOWN.md), `buildTown()` → one SVG,
+- [x] Layout table for all 31 buildings (TOWN.md), `buildTown()` → one SVG,
       < 1500 elements, seeded jitter only
-- [ ] Stage styling via `data-stage` + CSS custom properties; 4s crossfade
-- [ ] All five stage treatments per TOWN.md (windows, smoke, boats, tide,
+- [x] Stage styling via `data-stage` + CSS custom properties; 4s crossfade
+- [x] All five stage treatments per TOWN.md (windows, smoke, boats, tide,
       tendrils, the Bore, lighthouse behavior, stage-4 breathing)
-- [ ] Notable halos (available) + converted-building styling
-- [ ] **Verify:** dev-only `?stage=n` URL override to eyeball each stage;
+- [x] Notable halos (available) + converted-building styling
+- [x] **Verify:** dev-only `?stage=n` URL override to eyeball each stage;
       element count logged and < 1500; determinism: same state → identical
       SVG string twice
 

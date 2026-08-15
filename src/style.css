@@ -253,3 +253,101 @@ body.awakening #town { animation: fold 8s forwards; }
   html[data-stage="4"] #whisper, html[data-stage="4"] .panel,
   #overlay-hint, #ticker.roll #ticker-text { animation: none !important; }
 }
+
+/* ============================================================ THE TOWN == */
+#townsvg { display: block; }
+#townsvg .sky-top { stop-color: var(--sky1); transition: stop-color 4s; }
+#townsvg .sky-bot { stop-color: var(--sky2); transition: stop-color 4s; }
+#townsvg .land { fill: var(--land); transition: fill 4s; }
+#townsvg .street { fill: none; stroke: color-mix(in srgb, var(--ink) 8%, transparent); stroke-width: 1.6; }
+#townsvg .sea { fill: var(--water); transition: fill 4s; }
+#townsvg .waterline { fill: none; stroke: color-mix(in srgb, var(--ink) 18%, transparent); stroke-width: 0.8; }
+#water { transition: transform 6s; }
+#townsvg[data-stage="2"] #water, #townsvg[data-stage="3"] #water, #townsvg[data-stage="4"] #water { transform: translateY(-5px); }
+
+#townsvg .base { fill: var(--bld); transition: fill 4s; }
+#townsvg .roof { fill: color-mix(in srgb, var(--bld) 70%, black); transition: fill 4s; }
+#townsvg .awning { stroke: color-mix(in srgb, var(--accent) 40%, var(--bld)); stroke-width: 1.2; }
+#townsvg .strut { stroke: color-mix(in srgb, var(--bld) 80%, white); stroke-width: 0.9; fill: none; }
+#townsvg .canopy { fill: color-mix(in srgb, var(--land) 60%, var(--accent)); }
+#townsvg .stone { fill: color-mix(in srgb, var(--bld) 60%, white); }
+#townsvg .quarrycut { fill: color-mix(in srgb, var(--land) 55%, black); }
+#townsvg .clockface { fill: color-mix(in srgb, var(--ink) 78%, var(--bld)); }
+#townsvg .hand { stroke: var(--bld); stroke-width: 0.9; }
+#townsvg .figure { fill: color-mix(in srgb, var(--ink) 60%, var(--bld)); }
+#townsvg .lamp { fill: color-mix(in srgb, var(--winlit) 70%, white); }
+#townsvg .blink { fill: #c0504a; animation: blink 2.4s step-end infinite; }
+@keyframes blink { 0%, 60% { opacity: 1; } 61%, 100% { opacity: 0.15; } }
+
+/* windows */
+#townsvg .win { fill: var(--windark); transition: fill 2.5s; }
+#townsvg .win.lit { fill: var(--winlit); }
+#townsvg[data-stage="2"] .win.lit, #townsvg[data-stage="3"] .win.lit { animation: flicker 6s infinite; animation-delay: var(--fd); }
+@keyframes flicker { 0%, 93%, 100% { opacity: 1; } 94% { opacity: 0.25; } 96% { opacity: 1; } 98% { opacity: 0.4; } }
+#townsvg[data-stage="4"] .win.lit { fill: var(--accent); animation: choirglow 7s ease-in-out infinite; }
+@keyframes choirglow { 0%, 100% { opacity: 0.75; } 50% { opacity: 1; } }
+#townsvg .bld.converted .win { fill: var(--winlit); }
+#townsvg[data-stage="3"] .bld.converted .win { fill: var(--accent); }
+
+/* gulls vanish at stage 1 */
+#townsvg .fx-gull { fill: none; stroke: color-mix(in srgb, var(--ink) 45%, transparent); stroke-width: 0.9; transition: opacity 4s; }
+#townsvg:not([data-stage="0"]) .fx-gull { opacity: 0; }
+
+/* smoke: inland at stage 0; toward the bay (mirrored, leaning) after */
+#townsvg .fx-smoke {
+  fill: none; stroke: color-mix(in srgb, var(--ink) 26%, transparent); stroke-width: 1.1; stroke-linecap: round;
+  transform-box: fill-box; transform-origin: bottom center;
+  animation: smokedrift 7s ease-in-out infinite; animation-delay: var(--sd);
+  transition: transform 4s;
+}
+@keyframes smokedrift { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.9; } }
+#townsvg:not([data-stage="0"]) .fx-smoke { transform: scaleX(-1) skewX(-14deg); }
+
+/* boats: bob naturally; one turns at stage 1; dead-calm uniformity at 2+ */
+#townsvg .boat { transition: transform 6s; transform: rotate(var(--ba)); animation: bob 5s ease-in-out infinite; animation-delay: var(--bd); }
+@keyframes bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 1.6px; } }
+#townsvg .boat .hull { fill: color-mix(in srgb, var(--bld) 70%, var(--ink)); }
+#townsvg[data-stage="1"] .boat-first { transform: rotate(0deg); }
+#townsvg[data-stage="2"] .boat, #townsvg[data-stage="3"] .boat, #townsvg[data-stage="4"] .boat { transform: rotate(-3deg); animation: none; }
+
+/* clocktower: runs until it stops at 3:14 (stage 2) */
+#townsvg .hand.hour { animation: spinhour 720s linear infinite; }
+#townsvg .hand.minute { animation: spinmin 60s linear infinite; }
+@keyframes spinhour { to { transform: rotate(360deg); } }
+@keyframes spinmin { to { transform: rotate(360deg); } }
+#townsvg[data-stage="2"] .hand, #townsvg[data-stage="3"] .hand, #townsvg[data-stage="4"] .hand { animation: none; }
+#townsvg[data-stage="2"] .hand.hour, #townsvg[data-stage="3"] .hand.hour, #townsvg[data-stage="4"] .hand.hour { transform: rotate(7deg); }
+#townsvg[data-stage="2"] .hand.minute, #townsvg[data-stage="3"] .hand.minute, #townsvg[data-stage="4"] .hand.minute { transform: rotate(-6deg); }
+
+/* lighthouse beam: lazy sweep -> hunting -> fixed on the Bore */
+#townsvg .fx-beam { fill: color-mix(in srgb, var(--winlit) 11%, transparent); animation: sweep 22s ease-in-out infinite alternate; transition: transform 4s; }
+@keyframes sweep { from { transform: rotate(-26deg); } to { transform: rotate(30deg); } }
+#townsvg[data-stage="3"] .fx-beam { animation-duration: 5s; }
+#townsvg[data-stage="4"] .fx-beam { animation: none; transform: rotate(-82deg) scale(1.55); fill: color-mix(in srgb, var(--accent) 22%, transparent); }
+
+/* the Bore */
+#fx-bore { opacity: 0; transition: opacity 6s; }
+#townsvg[data-stage="3"] #fx-bore, #townsvg[data-stage="4"] #fx-bore { opacity: 1; }
+#townsvg .bore-mouth { fill: #010204; }
+#townsvg .bore-ring { fill: none; stroke: color-mix(in srgb, var(--accent) 35%, transparent); stroke-width: 0.9; transform-box: fill-box; transform-origin: center; animation: borepulse 9s ease-in-out infinite; }
+#townsvg .bore-ring.r2 { animation-delay: -4.5s; }
+@keyframes borepulse { 0%, 100% { transform: scale(0.92); opacity: 0.4; } 50% { transform: scale(1.06); opacity: 1; } }
+
+/* tendrils */
+#townsvg .fx-tendril { fill: none; stroke: var(--tendril); stroke-width: 1.6; stroke-linecap: round; opacity: 0; transition: opacity 6s; }
+#townsvg[data-stage="2"] .t-shore { opacity: 0.9; }
+#townsvg[data-stage="3"] .t-shore, #townsvg[data-stage="4"] .t-shore,
+#townsvg[data-stage="3"] .t-web, #townsvg[data-stage="4"] .t-web { opacity: 0.95; }
+#townsvg[data-stage="4"] .fx-tendril { animation: tendrilpulse 7s ease-in-out infinite; animation-delay: var(--td); }
+@keyframes tendrilpulse { 0%, 100% { stroke-width: 1.6; } 50% { stroke-width: 2.4; } }
+
+/* notable halos */
+#townsvg .halo { fill: none; stroke: var(--accent); stroke-width: 0.8; opacity: 0; transition: opacity 2s; }
+#townsvg .halo.show { opacity: 0.55; animation: halopulse 3s ease-in-out infinite; }
+@keyframes halopulse { 0%, 100% { opacity: 0.25; } 50% { opacity: 0.7; } }
+
+@media (prefers-reduced-motion: reduce) {
+  #townsvg .fx-smoke, #townsvg .boat, #townsvg .win.lit, #townsvg .fx-beam,
+  #townsvg .bore-ring, #townsvg .fx-tendril, #townsvg .halo.show,
+  #townsvg .blink, #townsvg .hand { animation: none !important; }
+}
