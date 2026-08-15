@@ -28,6 +28,28 @@ function tapsPerSec(profile, t) {
   return t < 300 ? 3 : 0.8;    // casual
 }
 
+// Phase 9: whispers land in a district. A competent player bleeds the Eye
+// when it climbs and otherwise takes the best-paying district, which
+// naturally rotates because leaning on one saturates it. "sloppy" models a
+// player who never rotates — the sim proves rotation is worth something.
+function pickDistrict(state, profile) {
+  if (profile === "sloppy") return "hillside";
+  if (state.eye > 62) return "oldtown";
+  // Eye is a budget, not a taboo: notice costs nothing while the lid is shut
+  // and a great deal when it is open. Pricing it flat made the sim shun the
+  // richest district entirely and play worse than a human would.
+  const pressure = 22 * Math.pow(state.eye / B.EYE_MAX, 2);
+  let best = null, bestVal = -Infinity;
+  for (const d of B.DISTRICTS) {
+    const y = B.districtYield(state, d.id);
+    // value a free-Follower's worth of murmur, and price in drawn notice
+    let v = y.dread + (y.murmur ? B.tierCost("follower", state.tiers.follower) / B.murmurPerFollower(state) : 0);
+    v -= Math.max(0, y.eye) * pressure;
+    if (v > bestVal) { bestVal = v; best = d.id; }
+  }
+  return best;
+}
+
 // Marginal income/s gain of a hypothetical purchase, by cloning the state.
 function gainOf(state, tps, buy) {
   const clone = JSON.parse(JSON.stringify(state));
@@ -36,6 +58,7 @@ function gainOf(state, tps, buy) {
   clone.dread = state.dread;
   const before = B.ratePerSec(state) + B.tapPower(state) * tps;
   const after = B.ratePerSec(clone) + B.tapPower(clone) * tps;
+  // (tapPower is the right basis here: district multipliers scale both sides)
   return after - before;
 }
 
@@ -101,9 +124,15 @@ function simulate(profile) {
 
   let t = 0;
   let humming = null;
+  let tapBudget = 0;
   while (t < MAX_TIME) {
     const tps = tapsPerSec(profile, t);
-    B.earn(state, B.tapPower(state) * tps * DT);
+    tapBudget += tps * DT;
+    while (tapBudget >= 1) {
+      B.whisperInto(state, pickDistrict(state, profile));
+      tapBudget -= 1;
+    }
+    B.decaySaturation(state, DT);
     B.earn(state, B.ratePerSec(state) * DT);
     const inquiry = B.tickEye(state, DT);
     if (inquiry) {
@@ -157,6 +186,24 @@ function invariantChecks() {
   sTick.eye = B.EYE_MAX;
   if (!B.tickEye(sTick, 0.25)) fails.push("maxed Eye did not fire an Inquiry through tickEye");
   if (sTick.tiers.follower >= 10) fails.push("tick-path inquiry claimed nothing");
+  // Phase 9: saturation decays to zero and never goes negative.
+  const sSat = B.newState();
+  for (let i = 0; i < 30; i++) B.whisperInto(sSat, "hillside");
+  if (sSat.sat.hillside <= 0.9) fails.push("saturation did not build under spam");
+  B.decaySaturation(sSat, 999);
+  if (sSat.sat.hillside !== 0) fails.push("saturation did not decay to zero");
+  // Old Town bleeds the Eye but never below zero.
+  const sEye = B.newState();
+  sEye.eye = 1;
+  for (let i = 0; i < 10; i++) B.whisperInto(sEye, "oldtown");
+  if (sEye.eye < 0) fails.push("Eye went negative");
+  // Commons murmur grants Followers and the cost curve grows.
+  const sMur = B.newState();
+  const firstNeed = B.murmurPerFollower(sMur);
+  let granted = 0;
+  for (let i = 0; i < 60; i++) if (B.whisperInto(sMur, "commons").freeFollower) granted++;
+  if (granted < 1) fails.push("Commons murmur never granted a Follower");
+  if (B.murmurPerFollower(sMur) <= firstNeed) fails.push("murmur cost did not grow with the flock");
   // Offline is capped.
   const s2 = B.newState();
   s2.tiers.follower = 100;
@@ -205,6 +252,11 @@ function checkTargets(results) {
   between("optimal engine humming", opt.engine_humming, 120, 20 * 60);
   between("optimal awakening", opt.awakening, 25 * 60, 55 * 60);
   between("casual awakening", cas.awakening, 40 * 60, 75 * 60);
+  // Rotation must be worth something, or the district layer is decoration.
+  const sloppy = results.sloppy.milestones.awakening;
+  if (sloppy !== undefined && opt.awakening !== undefined && sloppy < opt.awakening * 1.05) {
+    fails.push(`rotation is worthless: sloppy play (${(sloppy/60).toFixed(1)}m) matches optimal (${(opt.awakening/60).toFixed(1)}m)`);
+  }
   if (results.casual.final.inquiries === 0 && results.optimal.final.inquiries === 0) {
     // Not a hard fail, but suspicious: the tension mechanic never fired.
     console.log("note: no Inquiry fired in either profile (Eye pressure may be too soft)");
@@ -213,7 +265,7 @@ function checkTargets(results) {
 }
 
 const results = {};
-for (const profile of ["optimal", "casual"]) {
+for (const profile of ["optimal", "casual", "sloppy"]) {
   results[profile] = simulate(profile);
   report(profile, results[profile]);
 }

@@ -26,7 +26,7 @@
 //     sticker price and the mid-game grinds dead.
 const TIERS = [
   { id: "follower", label: "Followers", baseCost: 25,    growth: 1.10, rate: 0.25,   consumes: null },
-  { id: "acolyte",  label: "Acolytes",  baseCost: 150,   growth: 1.13, rate: 10,     consumes: { tier: "follower", count: 8 } },
+  { id: "acolyte",  label: "Acolytes",  baseCost: 128,   growth: 1.13, rate: 10,     consumes: { tier: "follower", count: 8 } },
   { id: "priest",   label: "Priests",   baseCost: 2200,  growth: 1.13, rate: 320,    consumes: { tier: "acolyte",  count: 6 } },
   { id: "herald",   label: "Heralds",   baseCost: 25000, growth: 1.13, rate: 8000,   consumes: { tier: "priest",   count: 5 } },
   { id: "avatar",   label: "Avatars",   baseCost: 6e5,   growth: 1.13, rate: 130000, consumes: { tier: "herald",  count: 4 } },
@@ -86,6 +86,115 @@ const NOTABLES = [
 ];
 const NOTABLE_BY_ID = Object.fromEntries(NOTABLES.map(n => [n.id, n]));
 
+
+/* ------------------------------------------------------------ districts -- */
+// Whispers land somewhere. Each district pays differently and SATURATES as
+// you lean on it: yield falls, and past the obvious threshold the same street
+// dreaming the same dream every night starts drawing notice. Rotation is the
+// skill. (Phase 9 — see docs/DISTRICTS.md.)
+//   dread  : multiplier on tapPower
+//   eye    : Eye delta per whisper (negative = bleeds suspicion off)
+//   sat    : saturation added per whisper (0 = never saturates)
+//   murmur : murmur added per whisper (Commons only; buys free Followers)
+const DISTRICTS = [
+  { id: "harborfront", label: "Harborfront", blurb: "Working hands, easy fear.",
+    dread: 1.3, eye: 0,     sat: 0.085, murmur: 0 },
+  { id: "oldtown",     label: "Old Town",    blurb: "Whisper to the watchers; they forget to watch.",
+    dread: 0.7, eye: -1.2,  sat: 0.085, murmur: 0 },
+  { id: "commons",     label: "The Commons", blurb: "The crowd repeats what it hears.",
+    dread: 1.0, eye: 0,     sat: 0.085, murmur: 1 },
+  { id: "hillside",    label: "Hillside",    blurb: "Beds, and the sleepers in them. Richest, and noticed.",
+    dread: 1.9, eye: 0.25,  sat: 0.13,  murmur: 0 },
+  { id: "verge",       label: "The Verge",   blurb: "The edges. Nobody out here to notice anything.",
+    dread: 0.8, eye: -0.1,  sat: 0,     murmur: 0 },
+];
+const DISTRICT_BY_ID = Object.fromEntries(DISTRICTS.map(d => [d.id, d]));
+
+// Tuned (sim-proven): a player rotating 5 districts at ~3 taps/s adds ~0.05
+// sat/s to each, just under this decay — so rotation stays fresh. A player
+// mashing one adds ~0.26/s and tanks it to the yield floor in ~6s.
+const SAT_DECAY = 0.085;        // per second
+const SAT_YIELD_FLOOR = 0.25;   // fully saturated districts still pay this
+const SAT_OBVIOUS = 0.7;        // past this, whispering draws notice
+const SAT_OBVIOUS_EYE = 0.35;   // Eye per whisper when obvious
+const MURMUR_BASE = 45;         // Commons whispers per free Follower...
+const MURMUR_GROWTH = 1.12;     // ...growing with the flock you already have
+
+// Yield multiplier for a district right now (1 = fresh, floor when spent).
+function districtMult(state, id) {
+  const sat = (state.sat && state.sat[id]) || 0;
+  return 1 - (1 - SAT_YIELD_FLOOR) * Math.min(1, sat);
+}
+
+// What one whisper into this district would pay, for the UI and the sim.
+function districtYield(state, id) {
+  const d = DISTRICT_BY_ID[id];
+  if (!d) return { dread: 0, eye: 0, murmur: 0 };
+  const sat = (state.sat && state.sat[id]) || 0;
+  const obvious = sat >= SAT_OBVIOUS;
+  return {
+    dread: tapPower(state) * d.dread * districtMult(state, id),
+    eye: d.eye + (obvious ? SAT_OBVIOUS_EYE : 0),
+    murmur: d.murmur,
+    saturation: sat,
+    obvious,
+  };
+}
+
+function murmurPerFollower(state) {
+  return MURMUR_BASE * Math.pow(MURMUR_GROWTH, state.tiers.follower);
+}
+
+// THE core verb. Returns what happened, for feedback: {dread, eye, freeFollower}.
+function whisperInto(state, id) {
+  const d = DISTRICT_BY_ID[id];
+  if (!d) return null;
+  const y = districtYield(state, id);
+  earn(state, y.dread);
+  state.eye = Math.max(0, Math.min(EYE_MAX, state.eye + y.eye));
+  state.sat[id] = Math.min(1, (state.sat[id] || 0) + d.sat);
+  let freeFollower = false;
+  if (d.murmur) {
+    state.murmur += d.murmur;
+    const need = murmurPerFollower(state);
+    if (state.murmur >= need) {
+      state.murmur -= need;
+      state.tiers.follower += 1;
+      state.tiersEver.follower += 1;
+      freeFollower = true;
+    }
+  }
+  return { dread: y.dread, eye: y.eye, freeFollower, obvious: y.obvious };
+}
+
+function decaySaturation(state, dt) {
+  for (const d of DISTRICTS) {
+    if (!state.sat[d.id]) continue;
+    state.sat[d.id] = Math.max(0, state.sat[d.id] - SAT_DECAY * dt);
+  }
+}
+
+/* ------------------------------------------------------ player readouts -- */
+// Honest numbers the MVP hid: what an Inquiry would take, and what the
+// Awakening would bank — so both become decisions instead of guesses.
+function eyeExposure(state) {
+  const fx = riteFx(state);
+  const followers = Math.max(0, Math.min(state.tiers.follower - INQUIRY_FLOOR,
+                                         Math.ceil(state.tiers.follower * fx.inquiryClaim)));
+  return {
+    followers,
+    dread: state.dread * fx.inquiryClaim * INQUIRY_DREAD_FACTOR,
+    secondsToInquiry: state.eye >= EYE_MAX ? 0 : Infinity, // Eye only rises on your actions
+  };
+}
+
+function glyphsIfAwakenNow(state) {
+  return Math.max(1, glyphsForLifetime(state.lifetime));
+}
+function lifetimeForGlyphs(n) {
+  return n * n * GLYPH_LIFETIME_UNIT;
+}
+
 /* ------------------------------------------------------------ suspicion -- */
 const EYE_MAX = 100;
 const EYE_BASE_DECAY = 0.2;           // per second
@@ -111,7 +220,7 @@ const OFFLINE_EFFICIENCY = 0.6;
 /* ---------------------------------------------------------------- state -- */
 function newState() {
   return {
-    v: 1,
+    v: 2,
     dread: 0,
     lifetime: 0,          // lifetime Dread this run (drives corruption)
     tiers: { follower: 0, acolyte: 0, priest: 0, herald: 0, avatar: 0 },
@@ -123,6 +232,9 @@ function newState() {
     glyphs: 0,            // NG+ Name glyphs (persist across Awakenings)
     awakenings: 0,
     visionsSeen: {},      // visionId -> true (narrative layer marks these)
+    sat: { harborfront: 0, oldtown: 0, commons: 0, hillside: 0, verge: 0 },
+    murmur: 0,            // Commons progress toward a free Follower
+    district: "harborfront",   // where your whispers are currently landing
   };
 }
 
@@ -302,6 +414,10 @@ function offlineDread(state, elapsedSeconds) {
 /* -------------------------------------------------------------- exports -- */
 const CONGREGATION_BALANCE = {
   TIERS, TIER_INDEX, TIER_EYE, RITES, RITE_BY_ID, NOTABLES, NOTABLE_BY_ID,
+  DISTRICTS, DISTRICT_BY_ID, SAT_DECAY, SAT_YIELD_FLOOR, SAT_OBVIOUS,
+  MURMUR_BASE, MURMUR_GROWTH,
+  districtMult, districtYield, murmurPerFollower, whisperInto, decaySaturation,
+  eyeExposure, glyphsIfAwakenNow, lifetimeForGlyphs,
   EYE_MAX, EYE_BASE_DECAY, EYE_AFTER_INQUIRY, INQUIRY_BASE_CLAIM,
   INQUIRY_DREAD_FACTOR, INQUIRY_FLOOR,
   CORRUPTION_THRESHOLDS, AWAKENING_COST, GLYPH_LIFETIME_UNIT, GLYPH_MULT,

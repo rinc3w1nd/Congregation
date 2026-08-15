@@ -5,6 +5,13 @@ explains the shapes and the rules for changing them. Concrete constants are
 quoted for orientation and may lag the code — when in doubt, read the code,
 and always re-run `node sim/run.js` after touching it.
 
+## Whispers (Phase 9)
+
+Tapping is no longer a flat trickle: whispers land in one of five districts,
+each paying differently and **saturating** under repetition. See
+[DISTRICTS.md](DISTRICTS.md). `tapPower()` remains the base the district
+multipliers scale, so rites and glyphs still apply exactly as before.
+
 ## Currency
 
 **Dread** — earned by taps (`tapPower`) and passively (`ratePerSec`). Lifetime
@@ -100,9 +107,12 @@ town slept…" report; the cap and efficiency are invariant-tested.
 
 ## The sim (`sim/run.js`)
 
-Runs two player profiles through the *actual* reducers (no reimplemented
-math): **optimal** (3 taps/s throughout) and **casual** (3 taps/s for 5 min,
-then 0.8/s). Purchasing is greedy best-payback with two wrinkles: it won't
+Runs three player profiles through the *actual* reducers (no reimplemented
+math): **optimal** (3 taps/s throughout), **casual** (3 taps/s for 5 min,
+then 0.8/s), and **sloppy** (mashes one district forever). Whispers go
+through `whisperInto()`, so district choice, saturation and murmur are all
+modelled; the policy treats the Eye as a budget (notice is free while the lid
+is shut, expensive when it is open) rather than a flat taboo. Purchasing is greedy best-payback with two wrinkles: it won't
 buy a notable that would trip an Inquiry, and after stage 4 it skips anything
 that can't pay for itself before the Awakening arrives by saving alone.
 
@@ -122,8 +132,12 @@ every balance change.
 | First Avatar | 41.5m | 43.7m |
 | Engine humming | 5.0m | 5.0m |
 | Stages 1–4 | 4.2 / 11.9 / 25.5 / 40.0m | 4.2 / 12.4 / 26.6 / 41.9m |
-| Inquiries survived | 22 | 21 |
-| **Awakening** | **41.4m** (1 glyph) | **43.6m** (2 glyphs) |
+| Inquiries survived | 9 | 18 |
+
+A third profile, **sloppy** (never rotates districts), reaches the Awakening
+at **53.2m** having eaten **35** Inquiries — the sim fails the build if that
+gap ever falls under 5%, so district play can't decay into decoration.
+| **Awakening** | **42.0m** (1 glyph) | **43.3m** (2 glyphs) |
 
 The sim's taps are frictionless; human play adds reading/UI time, so the
 "first Follower ~30s" human target corresponds to the sim's ~10s window.

@@ -22,7 +22,8 @@
       <circle id="eye-iris" cx="32" cy="12" r="0"/>
       <circle id="eye-pupil" cx="32" cy="12" r="0"/>
     </svg>
-    <div id="eye-tip" hidden>The Eye. Notable conversions and grand purchases draw notice; at its widest, an Inquiry comes. Veils help.</div>
+    <div id="eye-tip" hidden>The Eye. Notable conversions and grand purchases draw notice; at its widest, an Inquiry comes. Whisper into Old Town to bleed it off; Veils help.</div>
+    <div id="eye-warn" hidden></div>
   </div>
   <div id="hud-town">
     <div id="townname">MARROW BAY</div>
@@ -49,7 +50,12 @@
   <span id="tab-pill" aria-hidden="true"></span>
 </nav>
 
-<button id="whisper" aria-label="Whisper into the town's dreams">WHISPER</button>
+<div id="districts" role="group" aria-label="Where your whispers land"></div>
+
+<button id="whisper" aria-label="Whisper into the town's dreams">
+  <span id="whisper-label">WHISPER</span>
+  <span id="whisper-sub"></span>
+</button>
 
 <div id="overlay" hidden>
   <div id="overlay-card">

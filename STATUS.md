@@ -5,6 +5,49 @@ was verified, surprises, and the concrete next step.
 
 ---
 
+## 2026-08-15 — Phase 9: the town became the input surface
+
+MVP tagged first (`v1.0-mvp`, commit d210351 — pushed as a branch ref since
+this session's git proxy filters tag refs; the annotated tag exists locally).
+
+**Shipped**
+- `balance.js`: DISTRICTS + `whisperInto` / `districtYield` /
+  `decaySaturation` / `murmurPerFollower`, saturation + murmur state,
+  `eyeExposure` and `glyphsIfAwakenNow` / `lifetimeForGlyphs` readouts.
+- `town.js`: all 31 buildings tagged with their district and tappable
+  (delegated), saturation dims a district on the map, selected district
+  lifts toward the accent, whisper ripples (red when obvious).
+- `ui.js` + `index.html` + `style.css`: 5-chip district strip above the
+  thumb button with saturation fills, live whisper sublabel ("into Hillside
+  — ✦1.9 · you are being obvious"), Eye exposure warning, Awakening glyph
+  projection.
+- `state.js`: save v2 + v1 migration (progress and glyphs preserved).
+- `narrative.js`: the `spent` vision teaches rotation in fiction.
+- `docs/DISTRICTS.md`; ECONOMY/GDD/DECISIONS updated.
+
+**Verified**
+- `sim/run.js` green with a new **sloppy** profile and four new invariants
+  (saturation builds and fully decays, Eye never negative, murmur grants and
+  its cost grows). Pacing held: Acolyte 3.8m, Awakening 42.0m optimal /
+  43.3m casual — and sloppy play costs 11 minutes and 26 extra Inquiries.
+- 19/19 Playwright specs, including 7 new district specs and a v1→v2
+  migration test. Saturation shading confirmed in-browser (0.62 vs 1.0
+  opacity).
+
+**Surprises**
+1. The sim's first district policy priced Eye as a flat taboo and therefore
+   **never used Hillside at all** — it played worse than a human and made
+   the design look broken. Eye is now priced as a budget (quadratic in how
+   full it is). Lesson: when a sim says a design is bad, check the policy
+   before retuning the game.
+2. The old engine test failed honestly — it mashed one district. Tests now
+   rotate, like a player. Vision overlays firing mid-loop also forced a
+   retry-aware `whisper()` test helper.
+
+**Next**
+- Rite forks/exclusivity (the other structural hole from the audit: 17
+  upgrades, no decisions). Then human play-feel and cross-browser passes.
+
 ## 2026-08-15 — Phase 8 complete: THE GAME SHIPS. All phases done.
 
 **Shipped**

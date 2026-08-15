@@ -362,3 +362,77 @@ body.awakening #town { animation: fold 8s forwards; }
   #townsvg .bore-ring, #townsvg .fx-tendril, #townsvg .halo.show,
   #townsvg .blink, #townsvg .hand { animation: none !important; }
 }
+
+/* ====================================================== DISTRICTS (P9) == */
+#districts {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 5px;
+  padding: 6px 14px 0;
+  flex: 0 0 auto;
+}
+.chip-d {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 5px;
+  min-height: 46px;
+  padding: 6px 2px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--panel);
+  transition: border-color 0.25s, color 0.25s, opacity 0.25s;
+  color: var(--dim);
+}
+.chip-name { font-size: 10px; letter-spacing: 0.2px; white-space: nowrap; }
+.chip-sat { display: block; width: 80%; height: 2px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.chip-sat i { display: block; height: 100%; width: 0; background: var(--dim); transition: width 0.4s, background 0.4s; }
+.chip-d.sel { border-color: var(--accent); color: var(--accent); }
+.chip-d.sel .chip-sat i { background: var(--accent); }
+.chip-d.spent { opacity: 0.62; }
+.chip-d.obvious .chip-sat i { background: var(--danger); }
+.chip-d:active { transform: scale(0.96); }
+
+#whisper { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+#whisper-sub {
+  font-size: 10px; letter-spacing: 0; color: var(--dim);
+  text-transform: none; max-width: 92%; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+
+#eye-warn {
+  font-size: 9px; color: var(--danger); text-align: center;
+  margin-top: 2px; line-height: 1.3; max-width: 84px;
+}
+
+/* saturation dims the ground you have been leaning on */
+#townsvg [data-district="harborfront"] { opacity: calc(1 - var(--sat-harborfront, 0) * 0.5); }
+#townsvg [data-district="oldtown"]     { opacity: calc(1 - var(--sat-oldtown, 0) * 0.5); }
+#townsvg [data-district="commons"]     { opacity: calc(1 - var(--sat-commons, 0) * 0.5); }
+#townsvg [data-district="hillside"]    { opacity: calc(1 - var(--sat-hillside, 0) * 0.5); }
+#townsvg [data-district="verge"]       { opacity: calc(1 - var(--sat-verge, 0) * 0.5); }
+#townsvg .bld { transition: opacity 0.6s; cursor: pointer; }
+
+/* the selected district lifts slightly out of the dark */
+#townsvg[data-district="harborfront"] [data-district="harborfront"] .base,
+#townsvg[data-district="oldtown"]     [data-district="oldtown"] .base,
+#townsvg[data-district="commons"]     [data-district="commons"] .base,
+#townsvg[data-district="hillside"]    [data-district="hillside"] .base,
+#townsvg[data-district="verge"]       [data-district="verge"] .base {
+  fill: color-mix(in srgb, var(--bld) 82%, var(--accent));
+}
+
+/* whisper ripple */
+#townsvg .fx-ripple {
+  fill: none; stroke: var(--accent); stroke-width: 1.2;
+  transform-box: fill-box; transform-origin: center;
+  animation: rippleout 0.9s ease-out forwards;
+}
+#townsvg .fx-ripple.obvious { stroke: var(--danger); }
+@keyframes rippleout {
+  from { transform: scale(0.3); opacity: 0.9; }
+  to   { transform: scale(4.5); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #townsvg .fx-ripple { animation: none; opacity: 0; }
+}
+#whisper-sub.warn { color: var(--danger); }

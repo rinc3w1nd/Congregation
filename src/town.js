@@ -30,41 +30,41 @@ var TOWN = (function () {
   // x,y = ground-center / baseline. Notables per docs/TOWN.md.
   const LAYOUT = [
     // Harborfront (shoreline sits near y=218)
-    { id: "ferry",       x: 52,  y: 217, w: 30, h: 7,  kind: "dock" },
-    { id: "fishmarket",  x: 96,  y: 214, w: 22, h: 11, kind: "shop" },
-    { id: "cannery",     x: 138, y: 214, w: 30, h: 18, kind: "stack" },
-    { id: "bait",        x: 170, y: 214, w: 15, h: 10, kind: "shop", notable: "maren" },
-    { id: "sailloft",    x: 258, y: 214, w: 18, h: 13, kind: "house" },
-    { id: "harbormaster",x: 288, y: 214, w: 18, h: 12, kind: "civic", notable: "brun" },
-    { id: "jetty",       x: 215, y: 218, w: 34, h: 4,  kind: "jetty", notable: "child" },
+    { id: "ferry",       x: 52,  y: 217, w: 30, h: 7,  kind: "dock", dist: "harborfront" },
+    { id: "fishmarket",  x: 96,  y: 214, w: 22, h: 11, kind: "shop", dist: "harborfront" },
+    { id: "cannery",     x: 138, y: 214, w: 30, h: 18, kind: "stack", dist: "harborfront" },
+    { id: "bait",        x: 170, y: 214, w: 15, h: 10, kind: "shop", notable: "maren", dist: "harborfront" },
+    { id: "sailloft",    x: 258, y: 214, w: 18, h: 13, kind: "house", dist: "harborfront" },
+    { id: "harbormaster",x: 288, y: 214, w: 18, h: 12, kind: "civic", notable: "brun", dist: "harborfront" },
+    { id: "jetty",       x: 215, y: 218, w: 34, h: 4,  kind: "jetty", notable: "child", dist: "harborfront" },
     // Old Town
-    { id: "church",      x: 84,  y: 172, w: 22, h: 16, kind: "spire", notable: "ash" },
-    { id: "townhall",    x: 130, y: 172, w: 28, h: 15, kind: "civic", notable: "finch" },
-    { id: "sheriff",     x: 170, y: 172, w: 18, h: 12, kind: "civic", notable: "calloway" },
-    { id: "gazette",     x: 206, y: 172, w: 18, h: 13, kind: "shop", notable: "quill" },
-    { id: "library",     x: 243, y: 172, w: 20, h: 13, kind: "civic" },
-    { id: "clocktower",  x: 280, y: 172, w: 10, h: 30, kind: "clock" },
-    { id: "grange",      x: 312, y: 174, w: 22, h: 14, kind: "house", notable: "edda" },
+    { id: "church",      x: 84,  y: 172, w: 22, h: 16, kind: "spire", notable: "ash", dist: "oldtown" },
+    { id: "townhall",    x: 130, y: 172, w: 28, h: 15, kind: "civic", notable: "finch", dist: "oldtown" },
+    { id: "sheriff",     x: 170, y: 172, w: 18, h: 12, kind: "civic", notable: "calloway", dist: "oldtown" },
+    { id: "gazette",     x: 206, y: 172, w: 18, h: 13, kind: "shop", notable: "quill", dist: "oldtown" },
+    { id: "library",     x: 243, y: 172, w: 20, h: 13, kind: "civic", dist: "oldtown" },
+    { id: "clocktower",  x: 280, y: 172, w: 10, h: 30, kind: "clock", dist: "oldtown" },
+    { id: "grange",      x: 312, y: 174, w: 22, h: 14, kind: "house", notable: "edda", dist: "oldtown" },
     // The Commons
-    { id: "store",       x: 92,  y: 196, w: 20, h: 11, kind: "shop" },
-    { id: "bakery",      x: 122, y: 196, w: 16, h: 11, kind: "shop" },
-    { id: "butcher",     x: 148, y: 196, w: 16, h: 11, kind: "shop" },
-    { id: "tavern",      x: 186, y: 196, w: 20, h: 12, kind: "house" },
-    { id: "barber",      x: 214, y: 196, w: 13, h: 11, kind: "shop" },
-    { id: "surgery",     x: 244, y: 196, w: 18, h: 12, kind: "house", notable: "harrow" },
+    { id: "store",       x: 92,  y: 196, w: 20, h: 11, kind: "shop", dist: "commons" },
+    { id: "bakery",      x: 122, y: 196, w: 16, h: 11, kind: "shop", dist: "commons" },
+    { id: "butcher",     x: 148, y: 196, w: 16, h: 11, kind: "shop", dist: "commons" },
+    { id: "tavern",      x: 186, y: 196, w: 20, h: 12, kind: "house", dist: "commons" },
+    { id: "barber",      x: 214, y: 196, w: 13, h: 11, kind: "shop", dist: "commons" },
+    { id: "surgery",     x: 244, y: 196, w: 18, h: 12, kind: "house", notable: "harrow", dist: "commons" },
     // Hillside
-    { id: "school",      x: 96,  y: 138, w: 22, h: 13, kind: "house", notable: "vell" },
-    { id: "widowsrow",   x: 148, y: 136, w: 30, h: 11, kind: "terrace", notable: "grey" },
-    { id: "orchard",     x: 196, y: 136, w: 18, h: 11, kind: "tree" },
-    { id: "watertower",  x: 238, y: 138, w: 16, h: 24, kind: "tank" },
-    { id: "chapel",      x: 274, y: 136, w: 14, h: 11, kind: "stones" },
-    { id: "hilltop",     x: 310, y: 134, w: 28, h: 10, kind: "terrace" },
+    { id: "school",      x: 96,  y: 138, w: 22, h: 13, kind: "house", notable: "vell", dist: "hillside" },
+    { id: "widowsrow",   x: 148, y: 136, w: 30, h: 11, kind: "terrace", notable: "grey", dist: "hillside" },
+    { id: "orchard",     x: 196, y: 136, w: 18, h: 11, kind: "tree", dist: "hillside" },
+    { id: "watertower",  x: 238, y: 138, w: 16, h: 24, kind: "tank", dist: "hillside" },
+    { id: "chapel",      x: 274, y: 136, w: 14, h: 11, kind: "stones", dist: "hillside" },
+    { id: "hilltop",     x: 310, y: 134, w: 28, h: 10, kind: "terrace", dist: "hillside" },
     // The Verge
-    { id: "lighthouse",  x: 340, y: 208, w: 12, h: 26, kind: "light", notable: "keeper" },
-    { id: "marshcabin",  x: 20,  y: 212, w: 14, h: 9,  kind: "house" },
-    { id: "quarry",      x: 24,  y: 128, w: 26, h: 10, kind: "quarry" },
-    { id: "radiomast",   x: 330, y: 108, w: 4,  h: 26, kind: "mast" },
-    { id: "motel",       x: 38,  y: 176, w: 30, h: 10, kind: "shop" },
+    { id: "lighthouse",  x: 340, y: 208, w: 12, h: 26, kind: "light", notable: "keeper", dist: "verge" },
+    { id: "marshcabin",  x: 20,  y: 212, w: 14, h: 9,  kind: "house", dist: "verge" },
+    { id: "quarry",      x: 24,  y: 128, w: 26, h: 10, kind: "quarry", dist: "verge" },
+    { id: "radiomast",   x: 330, y: 108, w: 4,  h: 26, kind: "mast", dist: "verge" },
+    { id: "motel",       x: 38,  y: 176, w: 30, h: 10, kind: "shop", dist: "verge" },
   ];
   const NOTABLE_BUILDING = {};
   for (const b of LAYOUT) if (b.notable) NOTABLE_BUILDING[b.notable] = b;
@@ -101,7 +101,7 @@ var TOWN = (function () {
   }
 
   function building(b, layer) {
-    const g = mk("g", { id: "b-" + b.id, class: "bld k-" + b.kind }, layer);
+    const g = mk("g", { id: "b-" + b.id, class: "bld k-" + b.kind, "data-district": b.dist }, layer);
     const jx = (rnd("jx:" + b.id) - 0.5) * 2; // seeded jitter
     const x = b.x + jx, y = b.y, w = b.w, h = b.h, L = x - w / 2, R = x + w / 2;
     if (b.notable) {
@@ -272,6 +272,12 @@ var TOWN = (function () {
     const blds = mk("g", { id: "bld-layer" }, svg);
     for (const b of LAYOUT) building(b, blds);
 
+    blds.addEventListener("click", (ev) => {
+      const g = ev.target.closest ? ev.target.closest(".bld") : null;
+      if (!g || !tapHandler) return;
+      tapHandler(g.getAttribute("data-district"), ev.clientX, ev.clientY);
+    });
+
     if (new URLSearchParams(location.search).has("dev")) {
       console.log("[town] svg elements:", count);
     }
@@ -304,5 +310,52 @@ var TOWN = (function () {
     }
   }
 
-  return { build, setStage, refresh, _count: () => count };
+  /* ---------------------------------------------------------- districts -- */
+  // The town is the input surface (Phase 9). Tapping any building whispers
+  // into its district; saturation dims the district so "spent" ground reads
+  // at a glance.
+  let tapHandler = null;
+
+  function onDistrictTap(fn) { tapHandler = fn; }
+
+  function setSaturation(state) {
+    if (!svg || !state.sat) return;
+    for (const id in state.sat) svg.style.setProperty("--sat-" + id, state.sat[id].toFixed(3));
+  }
+
+  function setSelected(id) {
+    if (!svg) return;
+    svg.setAttribute("data-district", id || "");
+  }
+
+  // Expanding ring at the whispered point, in SVG user units.
+  function ripple(clientX, clientY, obvious) {
+    if (!svg || prefersReducedMotion()) return;
+    const pt = svg.createSVGPoint();
+    pt.x = clientX; pt.y = clientY;
+    const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+    const r = mk("circle", { cx: p.x.toFixed(1), cy: p.y.toFixed(1), r: 2,
+                             class: "fx-ripple" + (obvious ? " obvious" : "") }, svg);
+    setTimeout(() => r.remove(), 900);
+  }
+
+  function prefersReducedMotion() {
+    return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  // Centre of a district, for whispers fired from the button rather than the map.
+  function districtCenter(id) {
+    if (!svg) return null;
+    const rows = LAYOUT.filter(b => b.dist === id);
+    if (!rows.length) return null;
+    const cx = rows.reduce((a, b) => a + b.x, 0) / rows.length;
+    const cy = rows.reduce((a, b) => a + b.y - b.h / 2, 0) / rows.length;
+    const pt = svg.createSVGPoint();
+    pt.x = cx; pt.y = cy;
+    const m = pt.matrixTransform(svg.getScreenCTM());
+    return { x: m.x, y: m.y };
+  }
+
+  return { build, setStage, refresh, onDistrictTap, setSaturation, setSelected,
+           ripple, districtCenter, _count: () => count };
 })();

@@ -15,6 +15,8 @@ var NARRATIVE = (function () {
       text: "You have been listening for so long that you had forgotten you could speak. Somewhere above, in a warm bed, someone frowns in their sleep." },
     { id: "taste", when: (s) => s.lifetime >= 100,
       text: "It has a taste, their unease. Salt and copper and Sunday afternoons. You would like some more." },
+    { id: "spent", when: (s) => Object.values(s.sat || {}).some(v => v >= 0.85),
+      text: "The same street has had the same dream four nights running. They are starting to compare notes at the bakery — pleasantly, over bread, the way a town does right before it stops being pleasant. Let that ground rest. Speak somewhere else." },
     { id: "firstfollower", when: (s) => s.tiersEver.follower >= 1,
       text: "She stops locking her door at night. When her neighbor asks why, she says the sea asked her not to. Both of them laugh. Neither knows what the joke is." },
     { id: "gathering", when: (s) => s.tiersEver.follower >= 10,

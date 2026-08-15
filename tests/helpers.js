@@ -28,4 +28,15 @@ async function doctorStorage(context, fn, arg) {
   await p.close();
 }
 
-module.exports = { dismissAll, collectErrors, doctorStorage };
+// A whisper that survives a vision firing between the check and the click
+// (visions are queued asynchronously by the logic tick, so any guard races).
+async function whisper(page, districtId) {
+  if (districtId) {
+    try { await page.click("#chip-" + districtId, { timeout: 2000 }); }
+    catch (e) { await dismissAll(page); await page.click("#chip-" + districtId); }
+  }
+  try { await page.click("#whisper", { timeout: 2000 }); }
+  catch (e) { await dismissAll(page); await page.click("#whisper"); }
+}
+
+module.exports = { dismissAll, collectErrors, doctorStorage, whisper };

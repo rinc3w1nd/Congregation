@@ -52,3 +52,33 @@ a new dated entry that references the old.
   Inquiries rather than buy a single Veil. Pacing unaffected (41.4m/43.6m).
 - **Modal fatigue guard:** only the first Inquiry of a run gets the full
   overlay; repeats are a Gazette ticker line.
+
+## 2026-08-15 — Phase 9: the town is the input (post-MVP design change)
+
+Found in the post-ship audit: the monster had no agency over Marrow Bay. 31
+buildings, zero event listeners; tapping fell from 67% of income at one
+minute to 2.6% by twenty. The player was a shopkeeper with a very good view.
+
+- **Whispers land in a district.** Five districts with distinct yields;
+  Old Town bleeds the Eye, the Commons breeds free Followers, Hillside is
+  rich and noticed, the Verge is weak and safe.
+- **Saturation forces rotation.** Yield decays to a 25% floor under
+  repetition and past 0.7 starts drawing notice; decay is tuned so rotating
+  five districts keeps them all fresh while mashing one tanks it in ~6s.
+- **Suspicion became playable.** Old Town turns the Eye from a wall you wait
+  out into a valve you work — the endgame rhythm is now spend, quiet the
+  town, spend again.
+- **Ergonomics preserved:** a 5-chip strip above the thumb button is the
+  primary control; map buildings are also tappable. One-thumb play holds.
+- **Taught diegetically** by the `spent` vision, not a tutorial.
+- **The sim gained a `sloppy` profile** and asserts rotation is worth ≥5%,
+  so this layer cannot quietly become decoration.
+- Also shipped, from the same audit: the Awakening now projects the glyphs
+  it would bank and what the next one costs (it was a blind button), and the
+  Eye shows live what an Inquiry would claim.
+- Save format v1 → v2 with migration (old saves keep progress, get a fresh
+  unspent town).
+
+Retuned to hold MVP pacing: district multipliers average >1 so rotation beats
+the old flat tap; murmur raised 12→45 so free Followers stop stealing the
+first-convert beat; Acolyte 150→128 to keep the first Acolyte under 4m.

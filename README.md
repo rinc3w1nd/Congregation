@@ -25,6 +25,12 @@ Best on a phone-shaped window. Sound unlocks on your first whisper
 (toggleable under **More**). Progress saves locally and accrues while
 you're away (capped at 8 hours — dreams keep poorly past that).
 
+- **Whisper into a district.** Five of them, each paying differently —
+  Hillside is richest but draws notice, Old Town quiets the Eye, the Commons
+  breeds free Followers, the Verge is weak and safe. Lean on one and the
+  ground goes **spent**: yield collapses and the neighbours start comparing
+  notes. Rotate. (Ignoring this costs eleven minutes and 26 extra Inquiries
+  over a run — measured.)
 - **Flock** — Followers → Acolytes → Priests → Heralds → Avatars. Each tier
   consumes the one below, plus Dread, and murmurs more back.
 - **Rites** — Whispers (tap power), Congregation (passive), Veils
@@ -43,13 +49,14 @@ simulation, not vibes (see below).
 
 Dependency-free, build-free static web: classic `<script>` files sharing one
 global scope (`src/balance.js → state → town → narrative → audio → ui →
-app`). All eight roadmap phases are complete and browser-verified.
+app`). The MVP feature set is tagged **`v1.0-mvp`**; Phase 9 (districts) is
+the first post-MVP design change.
 
 - [CLAUDE.md](CLAUDE.md) — session operating manual (start here)
 - [ROADMAP.md](ROADMAP.md) · [STATUS.md](STATUS.md) · [DECISIONS.md](DECISIONS.md)
 - [docs/](docs/) — [GDD](docs/GDD.md) · [Economy & Suspicion](docs/ECONOMY.md) ·
   [Town & Corruption](docs/TOWN.md) · [Narrative](docs/NARRATIVE.md) ·
-  [Audio](docs/AUDIO.md) · [UI](docs/UI.md)
+  [Audio](docs/AUDIO.md) · [UI](docs/UI.md) · [Districts](docs/DISTRICTS.md)
 
 **The economy is regression-tested.** Every constant and reducer lives in
 [`src/balance.js`](src/balance.js); the headless sim plays optimal and
@@ -64,7 +71,7 @@ node sim/run.js       # pacing windows + invariants (no softlocks, caps, NG+)
 
 ```bash
 npm install           # @playwright/test
-npx playwright test   # 12 specs: engine, economy, town, narrative, audio
+npx playwright test   # 19 specs: engine, economy, town, districts, narrative, audio
 ```
 
 Dev URL hooks: `?stage=N` (force corruption visuals), `?grant=N` (dread),

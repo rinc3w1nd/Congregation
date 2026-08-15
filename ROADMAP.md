@@ -116,6 +116,34 @@ Files: `src/audio.js`.
       mirroring the wallpaper studio's test posture)
 - [x] README updated with play instructions + screenshot
 
+## Phase 9 — The town becomes the input (design change, post-MVP) ✅ (2026-08-15)
+
+The MVP's deepest flaw, found in the post-ship audit: **the monster has no
+agency over Marrow Bay.** 31 buildings, zero event listeners — the map is a
+progress bar in a map costume, and tapping decays from 67% of income at one
+minute to 2.6% by twenty. You play a shopkeeper with a very good view.
+
+Fix: whispers land *somewhere*. Five districts, each yielding differently,
+each **saturating** as you lean on it — so the act of whispering becomes a
+rotation with real positional judgment, and the Eye becomes a resource you
+play rather than a wall you wait out.
+
+- [x] `balance.js`: DISTRICTS data + `whisperInto()` / `districtYield()` /
+      `decaySaturation()` reducers; saturation + murmur state; save v2
+      with migration from v1
+- [x] Districts: Harborfront (steady) · Old Town (bleeds the Eye) ·
+      Commons (murmur → free Followers) · Hillside (richest, draws notice,
+      saturates fast) · The Verge (weak, safe, never saturates)
+- [x] `town.js`: districts selectable/tappable on the map, saturation
+      shown as the district dimming, whisper ripple at the tap point
+- [x] `ui.js`: district chip strip above the WHISPER button (saturation as
+      fill), big button whispers into the selected district — one-thumb
+      play preserved
+- [x] Awakening glyph projection in More (bank now vs. next threshold)
+- [x] Eye exposure readout: what an Inquiry would claim right now
+- [x] `sim/run.js`: model district rotation; re-prove pacing targets
+- [x] Tests: saturation decay, Eye bleed, free Followers, migration
+
 ## Deferred / non-goals (do not do without a new decision)
 
 Pages deploy wiring · i18n · cloud saves · achievements ·

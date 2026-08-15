@@ -34,6 +34,7 @@ var APP = (function () {
   }
 
   function step(dt) {
+    BAL.decaySaturation(game.state, dt);
     BAL.earn(game.state, BAL.ratePerSec(game.state) * dt);
     const inquiry = BAL.tickEye(game.state, dt);
     if (inquiry) {
@@ -70,15 +71,28 @@ var APP = (function () {
     requestAnimationFrame(frame);
   }
 
-  function tap(ev) {
+  // THE verb. A whisper always lands somewhere: `where` from a map tap, else
+  // the currently selected district.
+  function whisper(where, x, y) {
     if (!game.firstTap) {
       game.firstTap = true;
       AUDIO.unlock();
       NARRATIVE.step(game.state, { type: "firsttap" });
     }
-    BAL.earn(game.state, BAL.tapPower(game.state));
+    const id = where || game.state.district || "harborfront";
+    if (where && where !== game.state.district) UI.selectDistrict(where);
+    const res = BAL.whisperInto(game.state, id);
+    if (!res) return;
     AUDIO.whisper();
-    if (ev && ev.clientX) UI.tapFx(ev.clientX, ev.clientY);
+    if (x === undefined) {
+      const c = TOWN.districtCenter(id);
+      if (c) { x = c.x; y = c.y; }
+    }
+    if (x !== undefined) { TOWN.ripple(x, y, res.obvious); UI.tapFx(x, y); }
+    if (res.freeFollower) {
+      AUDIO.convert("follower");
+      NARRATIVE.step(game.state, { type: "buy", kind: "tier", id: "follower" });
+    }
     UI.render(game.state);
   }
 
@@ -146,7 +160,11 @@ var APP = (function () {
     }
     if (DEVQ.has("vision")) NARRATIVE.preview(DEVQ.get("vision"));
 
-    document.getElementById("whisper").addEventListener("click", tap);
+    document.getElementById("whisper").addEventListener("click", (ev) => {
+      // fired from the thumb button: place the effect over the district itself
+      whisper(null, undefined, undefined);
+    });
+    TOWN.onDistrictTap((id, x, y) => whisper(id, x, y));
     game.last = performance.now();
     setInterval(logic, 100);
     setInterval(() => saveGame(game.state), 15000);
@@ -161,5 +179,5 @@ var APP = (function () {
 
   init();
 
-  return { game, onPurchase, visualStage };
+  return { game, onPurchase, visualStage, whisper };
 })();

@@ -37,7 +37,9 @@ tap (whisper) → Dread → convert Followers → passive Dread
 ```
 
 - **Dread** is the only currency. Earned by tapping (whispers) and passively
-  by the congregation.
+  by the congregation. **Whispers land in a district** — five of them, each
+  paying differently and tiring under repetition, so where you speak is a
+  standing decision. See [DISTRICTS.md](DISTRICTS.md).
 - **Congregation tiers** — Followers → Acolytes → Priests → Heralds → Avatar.
   Each tier consumes bodies from the tier below plus Dread, and generates more.
   See [ECONOMY.md](ECONOMY.md).

@@ -207,6 +207,7 @@ var UI = (function () {
     const aw = el("div", "awaken-wrap hidden");
     aw.id = "awaken-wrap";
     aw.innerHTML = '<p class="panel-note">There is a point past which whispering is unnecessary.</p>' +
+      '<p class="panel-note" id="awaken-proj"></p>' +
       '<button id="awaken-btn" class="buy big danger">THE AWAKENING — ' + DREAD + fmt(BAL.AWAKENING_COST) + '</button>';
     p.appendChild(aw);
     aw.querySelector("#awaken-btn").addEventListener("click", () => {
@@ -254,6 +255,56 @@ var UI = (function () {
     moreBits = true;
   }
 
+  /* ----------------------------------------------------------- districts -- */
+  const chips = {};
+  function buildDistricts() {
+    const wrap = $("districts");
+    wrap.innerHTML = "";
+    for (const d of BAL.DISTRICTS) {
+      const b = el("button", "chip-d");
+      b.id = "chip-" + d.id;
+      b.title = d.blurb;
+      b.innerHTML = '<span class="chip-name">' + d.label.replace("The ", "") + '</span>' +
+                    '<span class="chip-sat"><i></i></span>';
+      b.addEventListener("click", () => selectDistrict(d.id));
+      wrap.appendChild(b);
+      chips[d.id] = b;
+    }
+  }
+
+  function selectDistrict(id) {
+    game.state.district = id;
+    for (const k in chips) chips[k].classList.toggle("sel", k === id);
+    TOWN.setSelected(id);
+    renderSlow(game.state);
+  }
+
+  function renderDistricts(state) {
+    const cur = state.district;
+    for (const d of BAL.DISTRICTS) {
+      const y = BAL.districtYield(state, d.id);
+      const c = chips[d.id];
+      c.classList.toggle("sel", d.id === cur);
+      c.classList.toggle("spent", y.saturation > 0.45);
+      c.classList.toggle("obvious", y.obvious);
+      c.querySelector("i").style.width = Math.round(y.saturation * 100) + "%";
+    }
+    const y = BAL.districtYield(state, cur);
+    const d = BAL.DISTRICT_BY_ID[cur];
+    let note = DREAD + fmt(y.dread);
+    if (y.obvious) note += " · you are being obvious";
+    else if (y.saturation > 0.45) note += " · this ground is spent";
+    else if (d.eye < 0) note += " · quiets the Eye";
+    else if (d.eye > 0) note += " · draws notice";
+    if (d.murmur) {
+      const need = Math.ceil(BAL.murmurPerFollower(state) - state.murmur);
+      note += " · " + need + " to a Follower";
+    }
+    $("whisper-sub").textContent = "into " + d.label + " — " + note;
+    $("whisper-sub").classList.toggle("warn", y.obvious);
+    TOWN.setSaturation(state);
+  }
+
   /* ---------------------------------------------------------------- tabs -- */
   function setupTabs() {
     const tabs = Array.from(document.querySelectorAll("#tabs .tab"));
@@ -290,6 +341,13 @@ var UI = (function () {
     $("eye-iris").setAttribute("r", iris.toFixed(1));
     $("eye-pupil").setAttribute("r", (iris * 0.45).toFixed(1));
     $("hud-eye").classList.toggle("wide", o > 0.8);
+    const warn = $("eye-warn");
+    if (o > 0.55) {
+      const ex = BAL.eyeExposure(state);
+      warn.hidden = false;
+      warn.textContent = "an Inquiry would take " + ex.followers + " of the flock" +
+        (ex.dread > 1 ? " and " + DREAD + fmt(ex.dread) : "");
+    } else warn.hidden = true;
 
     // Flock
     for (const t of BAL.TIERS) {
@@ -337,6 +395,7 @@ var UI = (function () {
       btn.classList.toggle("afford", can);
     }
     TOWN.refresh(state);
+    renderDistricts(state);
     passiveMote(state);
     $("folk-waiting").textContent = waiting > 0 ? waiting + " of Marrow Bay are not yet listening." : "All of Marrow Bay is listening.";
 
@@ -349,7 +408,15 @@ var UI = (function () {
     $("stat-glyphs").textContent = state.glyphs;
     const awWrap = $("awaken-wrap");
     awWrap.classList.toggle("hidden", stage < 4);
-    if (stage >= 4) $("awaken-btn").disabled = !BAL.canAwaken(state);
+    if (stage >= 4) {
+      $("awaken-btn").disabled = !BAL.canAwaken(state);
+      const now = BAL.glyphsIfAwakenNow(state);
+      const nextAt = BAL.lifetimeForGlyphs(now + 1);
+      $("awaken-proj").innerHTML =
+        "Stopping now carves <b>" + now + "</b> glyph" + (now > 1 ? "s" : "") +
+        " (all Dread ×" + (1 + BAL.GLYPH_MULT * (state.glyphs + now)).toFixed(2) + " forever)." +
+        "<br>A " + (now + 1) + "th needs " + DREAD + fmt(nextAt - state.lifetime) + " more lifetime dread.";
+    }
   }
 
   function render(state) {
@@ -362,17 +429,22 @@ var UI = (function () {
   return {
     init(g, h) {
       game = g; handlers = h;
-      buildFlock(); buildRites(); buildFolk(); buildMore(); setupTabs();
+      buildFlock(); buildRites(); buildFolk(); buildMore(); buildDistricts(); setupTabs();
+      selectDistrict(g.state.district || "harborfront");
       $("overlay").addEventListener("click", overlayTap);
       $("hud-eye").addEventListener("click", () => {
-        queueOverlay({ kicker: "the Eye", quiet: true, text: $("eye-tip").textContent });
+        const ex = BAL.eyeExposure(game.state);
+        queueOverlay({ kicker: "the Eye", quiet: true,
+          text: $("eye-tip").textContent,
+          sub: "Right now an Inquiry would claim " + ex.followers + " Followers and " +
+               DREAD + fmt(ex.dread) + "." });
       });
       shownDread = g.state.dread;
       moteLayer = el("div", "");
       moteLayer.id = "motes";
       document.body.appendChild(moteLayer);
     },
-    render, queueOverlay,
+    render, queueOverlay, selectDistrict,
     tapFx(x, y) {
       const n = 1 + Math.floor(hashN(moteSeq++) * 3);
       for (let i = 0; i < n; i++) mote(x, y - 20);

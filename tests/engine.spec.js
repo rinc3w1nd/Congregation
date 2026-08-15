@@ -1,6 +1,6 @@
 "use strict";
 const { test, expect } = require("@playwright/test");
-const { dismissAll, collectErrors, doctorStorage } = require("./helpers");
+const { dismissAll, collectErrors, doctorStorage, whisper } = require("./helpers");
 
 test.describe("engine core", () => {
   test("tap earns, buy works, passive accrues, save round-trips", async ({ page }) => {
@@ -8,7 +8,13 @@ test.describe("engine core", () => {
     await page.goto("/");
     await page.click("#whisper");
     await dismissAll(page); // wake vision
-    for (let i = 0; i < 30; i++) await page.click("#whisper");
+    // Phase 9: whispers saturate the ground they land on, so a player
+    // rotates districts. Mashing one is a real (and intended) penalty.
+    const DISTRICTS = ["harborfront", "hillside", "commons", "verge", "oldtown"];
+    for (let i = 0; i < 40; i++) {
+      await whisper(page, i % 4 === 0 ? DISTRICTS[(i / 4) % DISTRICTS.length] : null);
+    }
+    await dismissAll(page);
     await dismissAll(page); // taste vision at 100 lifetime? (not yet at 31)
     await expect(page.locator("#buy-follower")).toBeEnabled();
     await page.click("#buy-follower");

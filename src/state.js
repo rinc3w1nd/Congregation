@@ -37,10 +37,16 @@ function loadGame() {
   if (!raw) return { state: BAL.newState(), offlineSeconds: 0, corrupt: false };
   try {
     const env = JSON.parse(raw);
-    if (env.v !== 1 || !env.state || typeof env.state !== "object") throw new Error("bad envelope");
+    if (!env.v || env.v > 2 || !env.state || typeof env.state !== "object") throw new Error("bad envelope");
     // Merge over fresh defaults so new fields added later self-heal.
     const base = BAL.newState();
     const st = Object.assign(base, env.state);
+    // v1 -> v2: districts arrived in Phase 9. Old saves get a fresh, unspent
+    // town rather than being discarded.
+    st.sat = Object.assign(BAL.newState().sat, env.state.sat || {});
+    if (typeof st.murmur !== "number") st.murmur = 0;
+    if (!BAL.DISTRICT_BY_ID[st.district]) st.district = "harborfront";
+    st.v = 2;
     st.tiers = Object.assign(BAL.newState().tiers, env.state.tiers);
     st.tiersEver = Object.assign(BAL.newState().tiersEver, env.state.tiersEver);
     const offlineSeconds = env.savedAt ? Math.max(0, (Date.now() - env.savedAt) / 1000) : 0;
@@ -53,7 +59,7 @@ function loadGame() {
 
 function saveGame(state) {
   try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify({ v: 1, savedAt: Date.now(), state }));
+    localStorage.setItem(SAVE_KEY, JSON.stringify({ v: 2, savedAt: Date.now(), state }));
   } catch (e) { /* quota/private mode: play on, memory-only */ }
 }
 
