@@ -5,6 +5,33 @@ was verified, surprises, and the concrete next step.
 
 ---
 
+## 2026-08-15 — Phases 4 + 6 complete: narrative layer and the Awakening
+
+**Shipped**
+- `src/narrative.js`: all 14 milestone visions + finale text, 12 notable
+  card/beat pairs, gazette pools for all five stages + NG+ pool, seeded
+  no-repeat ticker rotation, vision trigger engine (fired flags persisted in
+  `visionsSeen`), notable conversion beats as overlays, finale sequence
+  (awakening vision → NG+ card with glyph math → onDismiss starts NG+).
+- Overlay queue: `onDismiss` support; offline report gains the NG+ chalk
+  line on runs 2+.
+- Phase 6 was already wired through app/ui scaffolding: awaken() state swap,
+  fold animation, glyph banking, UI rebuild into NG+.
+
+**Verified (browser)**
+- Wake vision on first tap; taste at 100 lifetime; Maren converts with her
+  beat overlay (kicker = her name) and her card flips to the beat text.
+- Ticker: 7 unique lines before any repeat, deterministic cycle order.
+- Full finale: grant 2.5e8 → THE AWAKENING button → confirm → "You stop
+  whispering." → NG+ card "+1 Name glyph — all Dread ×1.25 forever" →
+  fresh state {glyphs:1, awakenings:1, dread:0, stage 0}, tapPower 1.25,
+  all surviving reload. No page errors.
+
+**Surprises**
+- Playwright refuses to click elements under the stage-4 breathing
+  animation ("element is not stable") — by design; tests must use
+  force:true at stage 4. Noted for the Phase 8 suite.
+
 ## 2026-08-15 — Phase 3 complete: Marrow Bay drawn, five stages live
 
 **Shipped**

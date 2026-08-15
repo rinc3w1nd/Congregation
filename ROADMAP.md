@@ -61,17 +61,17 @@ Files: `src/town.js` (+ style.css stage palettes).
       element count logged and < 1500; determinism: same state → identical
       SVG string twice
 
-## Phase 4 — Narrative
+## Phase 4 — Narrative ✅ (2026-08-15)
 
 Files: `src/narrative.js`.
 
-- [ ] All text from NARRATIVE.md as data (visions, notable cards/beats,
+- [x] All text from NARRATIVE.md as data (visions, notable cards/beats,
       gazette pools, offline/inquiry templates)
-- [ ] Vision overlay system (queue, one-at-a-time, tap-dismiss, fired flags
+- [x] Vision overlay system (queue, one-at-a-time, tap-dismiss, fired flags
       in `state.visionsSeen`)
-- [ ] Folk panel: notable cards, `buyNotable` only, stage gating shown
-- [ ] Gazette ticker: seeded no-repeat rotation from stage pool
-- [ ] **Verify:** all 15 visions reachable (dev `?vision=id` preview); no
+- [x] Folk panel: notable cards, `buyNotable` only, stage gating shown
+- [x] Gazette ticker: seeded no-repeat rotation from stage pool
+- [x] **Verify:** all 15 visions reachable (dev `?vision=id` preview); no
       vision fires twice in a run; ticker never repeats until pool exhausts
 
 ## Phase 5 — Audio
@@ -84,14 +84,14 @@ Files: `src/audio.js`.
 - [ ] **Verify:** each stage adds exactly one layer (dev `?stage=` works with
       audio); toggling off silences within 2s; suspend on tab hide
 
-## Phase 6 — Awakening & NG+
+## Phase 6 — Awakening & NG+ ✅ (2026-08-15)
 
-- [ ] Awakening button in More (locked → affordable states per threshold
+- [x] Awakening button in More (locked → affordable states per threshold
       vision); finale sequence: audio glissando + map folds into the Bore +
       `awakening` vision + NG+ card with glyphs banked
-- [ ] `awaken()` state swap; NG+ starts at stage 0 with glyph multiplier
+- [x] `awaken()` state swap; NG+ starts at stage 0 with glyph multiplier
       live; NG+ gazette pool mixed in; run counter shown in More
-- [ ] **Verify:** sim invariants still green; in-browser: awaken with a dev
+- [x] **Verify:** sim invariants still green; in-browser: awaken with a dev
       state (`?dev=awaken`), confirm glyphs persist through refresh and
       multiply income
 

@@ -24,11 +24,18 @@ var UI = (function () {
   /* ------------------------------------------------------------ overlay -- */
   const queue = [];
   let overlayBusy = false;
+  let currentItem = null;
 
   function queueOverlay(item) { queue.push(item); if (!overlayBusy) nextOverlay(); }
 
   function nextOverlay() {
+    if (currentItem && currentItem.onDismiss) {
+      const cb = currentItem.onDismiss;
+      currentItem = null;
+      cb();
+    }
     const item = queue.shift();
+    currentItem = item || null;
     if (!item) { overlayBusy = false; $("overlay").hidden = true; return; }
     overlayBusy = true;
     $("overlay-kicker").textContent = item.kicker || "";
@@ -295,8 +302,8 @@ var UI = (function () {
       const can = BAL.canBuyNotable(state, n.id);
       btn.disabled = !can;
       btn.classList.toggle("afford", can);
-      TOWN.refresh(state);
     }
+    TOWN.refresh(state);
     $("folk-waiting").textContent = waiting > 0 ? waiting + " of Marrow Bay are not yet listening." : "All of Marrow Bay is listening.";
 
     // More
@@ -333,7 +340,7 @@ var UI = (function () {
         kicker: "while the town slept…",
         quiet: true,
         text: "While the town slept, the congregation murmured your name into the dark. <b>+" + DREAD + fmt(dread) + "</b> gathered over " + fmtDuration(seconds) + ".",
-        sub: capped ? "(Dreams keep poorly past eight hours.)" : "",
+        sub: ((capped ? "(Dreams keep poorly past eight hours.) " : "") + NARRATIVE.offlineExtra(game.state)).trim(),
       });
     },
     showInquiry(rep) {
