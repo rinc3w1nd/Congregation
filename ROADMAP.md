@@ -95,13 +95,13 @@ Files: `src/audio.js`.
       state (`?dev=awaken`), confirm glyphs persist through refresh and
       multiply income
 
-## Phase 7 — Polish
+## Phase 7 — Polish ✅ (2026-08-15)
 
-- [ ] Dread motes, number easing, press states, affordable glows (UI.md)
-- [ ] Stage-4 breathing on UI panels; `prefers-reduced-motion` honored
-- [ ] Thumb-zone audit on a 360×780 viewport; targets ≥ 44px
-- [ ] First-5-minutes feel pass: escalation beat present (stage 1 ~4–5min)
-- [ ] **Verify:** Lighthouse-style perf sanity (no long tasks from ambience;
+- [x] Dread motes, number easing, press states, affordable glows (UI.md)
+- [x] Stage-4 breathing on UI panels; `prefers-reduced-motion` honored
+- [x] Thumb-zone audit on a 360×780 viewport; targets ≥ 44px
+- [x] First-5-minutes feel pass: escalation beat present (stage 1 ~4–5min)
+- [x] **Verify:** Lighthouse-style perf sanity (no long tasks from ambience;
       CSS-only animations), reduced-motion spot check
 
 ## Phase 8 — Verification & handoff (the gate)

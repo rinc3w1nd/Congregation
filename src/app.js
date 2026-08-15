@@ -78,6 +78,7 @@ var APP = (function () {
     }
     BAL.earn(game.state, BAL.tapPower(game.state));
     AUDIO.whisper();
+    if (ev && ev.clientX) UI.tapFx(ev.clientX, ev.clientY);
     UI.render(game.state);
   }
 

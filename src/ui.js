@@ -20,6 +20,39 @@ var UI = (function () {
   let shownDread = 0, slowTimer = 0;
   const rows = {}, riteCards = {}, folkCards = {};
   let moreBits = null;
+  const reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* -------------------------------------------------------------- motes -- */
+  // Tiny dread particles drifting to the counter. Pooled, CSS-transitioned.
+  let moteLayer = null, moteSeq = 1, lastPassiveMote = 0;
+  function hashN(n) { let t = (n + 0x6D2B79F5) | 0;
+    t = Math.imul(t ^ (t >>> 15), 1 | t);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
+  function mote(x, y) {
+    if (reducedMotion || !moteLayer) return;
+    if (moteLayer.childElementCount > 24) return;
+    const target = $("dread").getBoundingClientRect();
+    const m = el("div", "mote");
+    const j1 = hashN(moteSeq++), j2 = hashN(moteSeq++);
+    m.style.transform = `translate(${x + (j1 - 0.5) * 30}px, ${y + (j2 - 0.5) * 16}px)`;
+    moteLayer.appendChild(m);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      m.style.transform = `translate(${target.left + 10 + j1 * 20}px, ${target.top + 8}px)`;
+      m.style.opacity = "0";
+    }));
+    setTimeout(() => m.remove(), 1300);
+  }
+  function passiveMote(state) {
+    const now = performance.now();
+    if (reducedMotion || now - lastPassiveMote < 1800 || BAL.ratePerSec(state) <= 0) return;
+    lastPassiveMote = now;
+    const wins = document.querySelectorAll("#townsvg .win.lit");
+    if (!wins.length) return;
+    const w = wins[Math.floor(hashN(moteSeq++) * wins.length)];
+    const r = w.getBoundingClientRect();
+    if (r.width) mote(r.left, r.top);
+  }
 
   /* ------------------------------------------------------------ overlay -- */
   const queue = [];
@@ -304,6 +337,7 @@ var UI = (function () {
       btn.classList.toggle("afford", can);
     }
     TOWN.refresh(state);
+    passiveMote(state);
     $("folk-waiting").textContent = waiting > 0 ? waiting + " of Marrow Bay are not yet listening." : "All of Marrow Bay is listening.";
 
     // More
@@ -334,8 +368,15 @@ var UI = (function () {
         queueOverlay({ kicker: "the Eye", quiet: true, text: $("eye-tip").textContent });
       });
       shownDread = g.state.dread;
+      moteLayer = el("div", "");
+      moteLayer.id = "motes";
+      document.body.appendChild(moteLayer);
     },
     render, queueOverlay,
+    tapFx(x, y) {
+      const n = 1 + Math.floor(hashN(moteSeq++) * 3);
+      for (let i = 0; i < n; i++) mote(x, y - 20);
+    },
     rebuild() { buildFlock(); buildRites(); buildFolk(); buildMore(); renderSlow(game.state); },
     showOffline(dread, seconds, capped) {
       queueOverlay({

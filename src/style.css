@@ -254,6 +254,17 @@ body.awakening #town { animation: fold 8s forwards; }
   #overlay-hint, #ticker.roll #ticker-text { animation: none !important; }
 }
 
+/* ---------------------------------------------------------------- motes -- */
+#motes { position: fixed; inset: 0; pointer-events: none; z-index: 40; }
+.mote {
+  position: absolute; left: 0; top: 0;
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+  opacity: 0.9;
+  transition: transform 1.1s cubic-bezier(0.3, 0, 0.7, 0.4), opacity 1.1s;
+}
+
 /* ============================================================ THE TOWN == */
 #townsvg { display: block; }
 #townsvg .sky-top { stop-color: var(--sky1); transition: stop-color 4s; }
