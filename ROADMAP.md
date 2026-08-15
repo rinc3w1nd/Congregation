@@ -13,37 +13,37 @@ Conventions and the per-session working loop live in [CLAUDE.md](CLAUDE.md).
 - [x] Design docs: GDD, ECONOMY, TOWN, NARRATIVE, AUDIO, UI
 - [x] Agent harness: ROADMAP, STATUS, DECISIONS, CLAUDE.md
 
-## Phase 1 — Engine core
+## Phase 1 — Engine core ✅ (2026-08-15)
 
 Files: `index.html`, `src/style.css` (skeleton), `src/state.js`, `src/app.js`.
 
-- [ ] `index.html` shell: header strip, empty map slot, panel area, WHISPER
+- [x] `index.html` shell: header strip, empty map slot, panel area, WHISPER
       button; classic scripts in order `balance.js → state.js → town.js →
       narrative.js → audio.js → ui.js → app.js` (missing files may be empty
       placeholder scripts until their phase)
-- [ ] Tick engine in `app.js`: 250ms fixed logic tick driven by elapsed
+- [x] Tick engine in `app.js`: 250ms fixed logic tick driven by elapsed
       wall-clock (catches up after throttling), rAF render loop decoupled
-- [ ] Tap → `earn(state, tapPower(state))`, passive → `earn(rate·dt)`
-- [ ] `state.js`: save envelope `{v:1, savedAt, state}` to localStorage key
+- [x] Tap → `earn(state, tapPower(state))`, passive → `earn(rate·dt)`
+- [x] `state.js`: save envelope `{v:1, savedAt, state}` to localStorage key
       `congregation-save-v1`; autosave 15s + `visibilitychange`/`pagehide`;
       corrupt save → quarantine to `-corrupt` key, start fresh, tell the user
-- [ ] Offline progress via `offlineDread()` + "While the town slept…" modal
+- [x] Offline progress via `offlineDread()` + "While the town slept…" modal
       (only when > 10s elapsed and > 0 Dread)
-- [ ] Big-number formatter (shared util in `state.js`; spec in UI.md)
-- [ ] Hard reset behind double confirm
-- [ ] **Verify:** `node --check` all files; manual: tap earns, refresh
+- [x] Big-number formatter (shared util in `state.js`; spec in UI.md)
+- [x] Hard reset behind double confirm
+- [x] **Verify:** `node --check` all files; manual: tap earns, refresh
       restores, offline modal correct, clock-jump (set `savedAt` forward)
       capped at 8h
 
-## Phase 2 — Tiers, rites, suspicion (playable economy)
+## Phase 2 — Tiers, rites, suspicion (playable economy) ✅ (2026-08-15)
 
-- [ ] Flock panel: five tier rows per UI.md (costs incl. bodies, disabled
+- [x] Flock panel: five tier rows per UI.md (costs incl. bodies, disabled
       states, buy through `buyTier` only)
-- [ ] Rites panel: three trees per UI.md, `buyRite` only
-- [ ] Eye meter rendering + `tickEye` wired into the logic tick
-- [ ] Inquiry event: overlay report (NARRATIVE.md), map headlights moment can
+- [x] Rites panel: three trees per UI.md, `buyRite` only
+- [x] Eye meter rendering + `tickEye` wired into the logic tick
+- [x] Inquiry event: overlay report (NARRATIVE.md), map headlights moment can
       stub until Phase 3
-- [ ] **Verify:** play to first Priest in-browser; numbers match a sim trace
+- [x] **Verify:** play to first Priest in-browser; numbers match a sim trace
       at comparable timestamps (±20%); Inquiry fires when Eye maxed and
       Followers floor at 1
 

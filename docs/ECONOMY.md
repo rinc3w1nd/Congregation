@@ -63,13 +63,19 @@ as such (portrait cards, not line items).
   by v2) and Priest/Herald/Avatar purchases (+3/+6/+12, zeroed by v5).
   Decays 0.2/s, doubled by v1 and again by v4.
 - **Inquiry** at Eye=100: claims 25% of Followers (10% with v3), floors at
-  **1 Follower minimum — never a softlock** (invariant-tested in the sim),
-  resets Eye to 35, increments a counter (Gazette reacts; first one fires a
-  vision).
-- Disciplined play can avoid Inquiries entirely (the greedy sim does, by
-  waiting out the Eye before notable buys) — that is fine. Suspicion is a
-  *pacing brake and mood device*, not a mandatory punishment. Casual players
-  who binge notables will eat 1–2 Inquiries per run.
+  **1 Follower minimum — an Inquiry never claims below the floor** (holding 0
+  Followers because Acolytes ate them all is legal; then it claims none —
+  invariant-tested in the sim). It also seizes Dread: claim fraction ×
+  `INQUIRY_DREAD_FACTOR` (base 10%, 4% with v3) of the current pile — added
+  after the sim proved Follower-only claims were toothless late-game (optimal
+  play ate 18 Inquiries rather than buy one Veil). Eye resets to 35. The
+  first Inquiry of a run gets a full overlay; repeats land as a Gazette line
+  (no modal storm).
+- Disciplined play can avoid *notable-triggered* Inquiries by waiting out
+  the Eye; late-game bulk tier-buying will still trip some — the sim's
+  frictionless burst-buying trips ~20 per run, a human buying at human speed
+  far fewer. Suspicion is a *pacing brake and mood device*, not a mandatory
+  punishment.
 
 ## Corruption
 
@@ -116,7 +122,8 @@ every balance change.
 | First Avatar | 41.5m | 43.7m |
 | Engine humming | 5.0m | 5.0m |
 | Stages 1–4 | 4.2 / 11.9 / 25.5 / 40.0m | 4.2 / 12.4 / 26.6 / 41.9m |
-| **Awakening** | **41.7m** (1 glyph) | **44.0m** (1 glyph) |
+| Inquiries survived | 22 | 21 |
+| **Awakening** | **41.4m** (1 glyph) | **43.6m** (2 glyphs) |
 
 The sim's taps are frictionless; human play adds reading/UI time, so the
 "first Follower ~30s" human target corresponds to the sim's ~10s window.

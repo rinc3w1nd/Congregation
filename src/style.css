@@ -1,0 +1,255 @@
+/* CONGREGATION — one stylesheet. Design tokens in :root; the five corruption
+   stages override tokens via html[data-stage] so the whole UI turns with the
+   town. System mono stack, no web fonts, no dependencies. */
+
+:root {
+  --bg: #0d0f14;
+  --panel: #151a22;
+  --panel2: #1b212c;
+  --ink: #d8dee9;
+  --dim: #78828f;
+  --line: #242c38;
+  --danger: #b0524f;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* stage-turned tokens (stage 0 values) */
+  --accent: #ffb454;
+  --sky1: #e79b6e; --sky2: #46597e;
+  --water: #17324a; --land: #2f3d46; --bld: #232c34;
+  --winlit: #ffd27f; --windark: #10151b;
+  --tendril: #1d2b26;
+  --breathe: 0; /* 1 at stage 4 */
+}
+html[data-stage="1"] { --accent: #d9a84e; --sky1: #cf9b6a; --sky2: #40556f; --water: #16303f; --land: #2c3a40; --bld: #20282e; --winlit: #f2c46e; }
+html[data-stage="2"] { --accent: #7fae8f; --sky1: #7fae9b; --sky2: #2e4a52; --water: #10333c; --land: #24343a; --bld: #1a2429; --winlit: #b9c98a; --tendril: #14231f; }
+html[data-stage="3"] { --accent: #8f7bb5; --sky1: #5a4a72; --sky2: #221d33; --water: #0d1524; --land: #1a2028; --bld: #12161d; --winlit: #6a5a8a; --tendril: #241b33; }
+html[data-stage="4"] { --accent: #9fe8df; --sky1: #12141c; --sky2: #05060a; --water: #030409; --land: #0b0d12; --bld: #07090d; --winlit: #9fe8df; --tendril: #16312d; --breathe: 1; }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--mono);
+  display: flex;
+  flex-direction: column;
+  max-width: 520px;
+  margin: 0 auto;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: background 4s;
+}
+button { font-family: var(--mono); color: inherit; background: none; border: none; cursor: pointer; }
+b { color: var(--accent); font-weight: 600; }
+
+/* ------------------------------------------------------------------ HUD -- */
+#hud {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: calc(8px + env(safe-area-inset-top)) 14px 8px;
+  border-bottom: 1px solid var(--line);
+  flex: 0 0 auto;
+}
+#dread { font-size: 26px; font-weight: 700; letter-spacing: 0.5px; font-variant-numeric: tabular-nums; }
+#rate { font-size: 11px; color: var(--dim); white-space: nowrap; }
+#hud-dread { min-width: 0; flex: 1 1 auto; }
+#hud-eye { flex: 0 0 76px; cursor: pointer; }
+#eye-svg { width: 76px; height: 30px; display: block; }
+#eye-lid-top, #eye-lid-bot { stroke: var(--dim); stroke-width: 1.6; transition: d 0.6s; }
+#eye-iris { fill: none; stroke: var(--accent); stroke-width: 1.4; }
+#eye-pupil { fill: var(--accent); }
+#hud-eye.wide #eye-pupil { animation: eyedart 1.2s infinite; }
+@keyframes eyedart { 0%,70%,100% { transform: translateX(0); } 80% { transform: translateX(3px); } 90% { transform: translateX(-3px); } }
+#hud-town { text-align: right; flex: 0 0 auto; }
+#townname { font-size: 11px; letter-spacing: 2px; color: var(--dim); }
+#stagename { font-size: 12px; color: var(--accent); transition: color 4s; }
+
+/* ----------------------------------------------------------------- main -- */
+main { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
+
+#town { flex: 0 0 44vh; min-height: 200px; position: relative; overflow: hidden; }
+#town svg { width: 100%; height: 100%; display: block; }
+#town-stub {
+  height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: var(--dim); letter-spacing: 3px; text-align: center; gap: 6px;
+  background: linear-gradient(var(--sky1), var(--sky2) 55%, var(--water));
+  transition: background 4s;
+}
+
+#ticker {
+  flex: 0 0 auto;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 5px 14px;
+  font-size: 11px;
+  color: var(--dim);
+  white-space: nowrap;
+  overflow: hidden;
+}
+#ticker.roll #ticker-text { display: inline-block; animation: tickroll 0.5s ease-out; }
+@keyframes tickroll { from { transform: translateY(110%); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* --------------------------------------------------------------- panels -- */
+#panels { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.panel { display: none; padding: 10px 14px 20px; }
+.panel.active { display: block; }
+.panel-note { font-size: 11px; color: var(--dim); margin: 6px 0 10px; line-height: 1.5; }
+.tree-head { font-size: 11px; letter-spacing: 2px; color: var(--dim); text-transform: uppercase; margin: 14px 0 6px; }
+.hidden { display: none !important; }
+
+.row {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 6px 0;
+}
+.row-info { flex: 1 1 auto; min-width: 0; }
+.row-name { font-size: 14px; }
+.row-name .count { color: var(--accent); margin-left: 6px; font-variant-numeric: tabular-nums; }
+.row-rate { font-size: 11px; color: var(--dim); margin-top: 2px; }
+
+.buy {
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  min-height: 44px;
+  white-space: nowrap;
+  transition: border-color 0.3s, box-shadow 0.3s, transform 0.05s;
+}
+.buy:active { transform: scale(0.97); }
+.buy:disabled { opacity: 0.45; cursor: default; }
+.buy.afford { border-color: var(--accent); box-shadow: 0 0 10px -4px var(--accent); }
+.buy.big { width: 100%; font-size: 14px; letter-spacing: 1px; padding: 14px; }
+.buy.danger, .overlay-btn.danger, .chip.danger { border-color: var(--danger); color: #e0a6a4; }
+
+.rite {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 10px;
+  width: 100%;
+  text-align: left;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 6px 0;
+  min-height: 44px;
+  transition: border-color 0.3s;
+}
+.rite-name { font-size: 13px; }
+.rite-cost { font-size: 12px; color: var(--accent); text-align: right; font-variant-numeric: tabular-nums; }
+.rite-fx { font-size: 11px; color: var(--dim); grid-column: 1 / 3; }
+.rite-blurb { font-size: 11px; color: var(--dim); font-style: italic; grid-column: 1 / 3; opacity: 0.8; }
+.rite.afford { border-color: var(--accent); }
+.rite.owned { opacity: 0.5; }
+.rite.owned .rite-cost { visibility: hidden; }
+.rite:disabled { cursor: default; }
+.rite:not(.owned):disabled { opacity: 0.65; }
+
+.folk {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 8px 0;
+}
+.folk-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.folk-name { font-size: 14px; }
+.folk-role { font-size: 11px; color: var(--dim); }
+.folk-line { font-size: 12px; color: var(--dim); line-height: 1.5; margin: 6px 0 8px; font-style: italic; }
+.folk-foot { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+.folk-eye { font-size: 11px; color: var(--danger); }
+.folk.converted { border-color: var(--accent); }
+.folk.converted .folk-line { color: var(--ink); }
+
+.stats { font-size: 12px; color: var(--dim); display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; }
+.stats b { font-variant-numeric: tabular-nums; }
+.settings { display: flex; gap: 10px; flex-wrap: wrap; }
+.chip {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 12px;
+  min-height: 44px;
+}
+
+/* ----------------------------------------------------------- tabs + tap -- */
+#tabs {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--line);
+  background: var(--bg);
+  flex: 0 0 auto;
+}
+#tabs .tab { padding: 10px 0 8px; font-size: 12px; color: var(--dim); z-index: 1; min-height: 44px; }
+#tabs .tab.active { color: var(--accent); }
+#tab-pill {
+  position: absolute; top: 0; left: 0;
+  width: 25%; height: 2px;
+  background: var(--accent);
+  transform: translateX(calc(var(--active) * 100%));
+  transition: transform 0.25s;
+}
+
+#whisper {
+  flex: 0 0 auto;
+  margin: 8px 14px calc(10px + env(safe-area-inset-bottom));
+  min-height: 88px;
+  border-radius: 16px;
+  border: 1px solid var(--accent);
+  background: radial-gradient(120% 160% at 50% 120%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%), var(--panel);
+  color: var(--accent);
+  font-size: 18px;
+  letter-spacing: 6px;
+  transition: border-color 4s, color 4s;
+}
+#whisper:active { transform: scale(0.985); }
+
+/* -------------------------------------------------------------- overlay -- */
+#overlay[hidden] { display: none; }
+#overlay {
+  position: fixed; inset: 0;
+  background: rgba(5, 6, 10, 0.86);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 50;
+  animation: fadein 0.6s;
+}
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+#overlay-card { max-width: 420px; padding: 28px; text-align: center; }
+#overlay-kicker { font-size: 11px; letter-spacing: 3px; color: var(--accent); text-transform: uppercase; margin-bottom: 14px; }
+#overlay-text { font-size: 15px; line-height: 1.7; animation: fadein 1s; }
+.overlay-subtext { font-size: 12px; color: var(--dim); margin-top: 12px; }
+.overlay-actions { display: flex; gap: 12px; justify-content: center; margin-top: 22px; flex-wrap: wrap; }
+.overlay-btn {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  border-radius: 8px;
+  padding: 12px 18px;
+  font-size: 12px;
+  min-height: 44px;
+}
+#overlay-hint { margin-top: 26px; font-size: 10px; color: var(--dim); letter-spacing: 2px; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+/* -------------------------------------------- stage 4: everything breathes */
+@keyframes breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.004); } }
+html[data-stage="4"] #town svg,
+html[data-stage="4"] #whisper,
+html[data-stage="4"] .panel { animation: breathe 7s ease-in-out infinite; }
+
+body.awakening #town { animation: fold 8s forwards; }
+@keyframes fold { to { transform: scale(0.02) rotate(6deg); opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  #hud-eye.wide #eye-pupil, html[data-stage="4"] #town svg,
+  html[data-stage="4"] #whisper, html[data-stage="4"] .panel,
+  #overlay-hint, #ticker.roll #ticker-text { animation: none !important; }
+}

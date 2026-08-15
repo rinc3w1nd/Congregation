@@ -70,6 +70,17 @@ function spend(state, tps, log, t) {
                s => B.buyNotable(s, n.id), "notable:" + n.id);
     }
 
+    // Once Inquiries start landing, a real player buys suspicion control
+    // even though Veils grant no direct income (greedy would skip them).
+    if (!best && state.inquiries >= 2) {
+      for (const r of B.RITES) {
+        if (r.tree === "veils" && B.canBuyRite(state, r.id)) {
+          B.buyRite(state, r.id);
+          log.buys.push({ t, what: "rite:" + r.id });
+          return;
+        }
+      }
+    }
     if (!best) return;
     // Endgame discipline: once stage 4 is reached, skip anything that would
     // not pay for itself before the Awakening arrives by saving alone.
@@ -97,7 +108,11 @@ function simulate(profile) {
     const inquiry = B.tickEye(state, DT);
     if (inquiry) {
       log.inquiries.push({ t, ...inquiry });
-      if (state.tiers.follower < B.INQUIRY_FLOOR) throw new Error("SOFTLOCK: followers below floor");
+      // The floor guarantee: an Inquiry never CLAIMS below the floor. Holding
+      // 0 followers (all consumed by Acolytes) is legal; then it claims none.
+      if (inquiry.claimed > 0 && state.tiers.follower < B.INQUIRY_FLOOR) {
+        throw new Error("SOFTLOCK: inquiry claimed followers below floor");
+      }
     }
     spend(state, tps, log, t);
 
@@ -135,6 +150,13 @@ function invariantChecks() {
   const rep = B.fireInquiry(s);
   if (s.tiers.follower < B.INQUIRY_FLOOR) fails.push("inquiry dropped followers below floor");
   if (rep.claimed !== 0) fails.push("inquiry claimed the last follower");
+  // A maxed Eye actually fires via the tick path (regression: decay-before-
+  // check once made Inquiries unreachable).
+  const sTick = B.newState();
+  sTick.tiers.follower = 10;
+  sTick.eye = B.EYE_MAX;
+  if (!B.tickEye(sTick, 0.25)) fails.push("maxed Eye did not fire an Inquiry through tickEye");
+  if (sTick.tiers.follower >= 10) fails.push("tick-path inquiry claimed nothing");
   // Offline is capped.
   const s2 = B.newState();
   s2.tiers.follower = 100;

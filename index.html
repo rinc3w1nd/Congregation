@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en" data-stage="0">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d0f14">
+<title>CONGREGATION</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7' fill='%230d0f14'/%3E%3Cellipse cx='8' cy='8' rx='5' ry='2.6' fill='none' stroke='%239fe8df' stroke-width='1'/%3E%3Ccircle cx='8' cy='8' r='1.6' fill='%239fe8df'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="src/style.css">
+</head>
+<body>
+
+<header id="hud">
+  <div id="hud-dread">
+    <div id="dread">0</div>
+    <div id="rate">the town sleeps</div>
+  </div>
+  <div id="hud-eye" role="img" aria-label="The Eye — suspicion meter">
+    <svg id="eye-svg" viewBox="0 0 64 24" aria-hidden="true">
+      <path id="eye-lid-top" d="M4 12 Q32 12 60 12" fill="none"/>
+      <path id="eye-lid-bot" d="M4 12 Q32 12 60 12" fill="none"/>
+      <circle id="eye-iris" cx="32" cy="12" r="0"/>
+      <circle id="eye-pupil" cx="32" cy="12" r="0"/>
+    </svg>
+    <div id="eye-tip" hidden>The Eye. Notable conversions and grand purchases draw notice; at its widest, an Inquiry comes. Veils help.</div>
+  </div>
+  <div id="hud-town">
+    <div id="townname">MARROW BAY</div>
+    <div id="stagename">quaint</div>
+  </div>
+</header>
+
+<main>
+  <div id="town" aria-label="Marrow Bay"></div>
+  <div id="ticker" aria-label="Marrow Bay Gazette"><span id="ticker-text"></span></div>
+  <div id="panels">
+    <section id="panel-flock" class="panel active" aria-label="Flock"></section>
+    <section id="panel-rites" class="panel" aria-label="Rites"></section>
+    <section id="panel-folk" class="panel" aria-label="Folk"></section>
+    <section id="panel-more" class="panel" aria-label="More"></section>
+  </div>
+</main>
+
+<nav id="tabs" style="--active:0">
+  <button class="tab active" data-panel="flock">Flock</button>
+  <button class="tab" data-panel="rites">Rites</button>
+  <button class="tab" data-panel="folk">Folk</button>
+  <button class="tab" data-panel="more">More</button>
+  <span id="tab-pill" aria-hidden="true"></span>
+</nav>
+
+<button id="whisper" aria-label="Whisper into the town's dreams">WHISPER</button>
+
+<div id="overlay" hidden>
+  <div id="overlay-card">
+    <div id="overlay-kicker"></div>
+    <p id="overlay-text"></p>
+    <div id="overlay-sub"></div>
+    <div id="overlay-hint">tap</div>
+  </div>
+</div>
+
+<script src="src/balance.js"></script>
+<script src="src/state.js"></script>
+<script src="src/town.js"></script>
+<script src="src/narrative.js"></script>
+<script src="src/audio.js"></script>
+<script src="src/ui.js"></script>
+<script src="src/app.js"></script>
+</body>
+</html>

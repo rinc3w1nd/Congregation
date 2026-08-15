@@ -39,3 +39,16 @@ a new dated entry that references the old.
 - Offline: 8h cap, 60% efficiency, passive only.
 - Town SVG < 1500 elements; stage changes restyle (data-stage + CSS custom
   properties), never regenerate geometry.
+
+## 2026-08-15 — Suspicion sharpened (provisional → confirmed by sim)
+
+- **tickEye checks the threshold before decaying.** Decay-first meant a
+  purchase pinning the Eye at exactly 100 slid to 99.95 before the check and
+  Inquiries could never fire at all. Caught by the Phase 2 browser test;
+  regression-tested in the sim's invariants.
+- **Inquiries seize Dread too** (claim fraction × 0.4 of the current pile,
+  so 10% base / 4% with The Sheriff Dreams Too), because Follower-only
+  claims were toothless once Avatars carry the rate — the sim happily ate 18
+  Inquiries rather than buy a single Veil. Pacing unaffected (41.4m/43.6m).
+- **Modal fatigue guard:** only the first Inquiry of a run gets the full
+  overlay; repeats are a Gazette ticker line.

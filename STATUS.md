@@ -5,6 +5,42 @@ was verified, surprises, and the concrete next step.
 
 ---
 
+## 2026-08-15 — Phases 1–2 complete: engine core + playable economy
+
+**Shipped**
+- `index.html` + `src/style.css`: full mobile-first shell (HUD with Dread/
+  rate/Eye, town slot, gazette ticker, 4 tab panels, WHISPER thumb button,
+  overlay system, stage-token palettes, stage-4 breathing, reduced-motion).
+- `src/state.js`: versioned save envelope, quarantine-not-wipe corrupt
+  handling, big-number formatter.
+- `src/app.js`: 250ms fixed logic tick (wall-clock driven, catch-up capped,
+  long gaps become offline progress), rAF render, autosave 15s +
+  visibility/pagehide, offline report, dev hooks (?grant/?stage/?vision).
+- `src/ui.js`: Flock/Rites/Folk/More panels fully wired through BAL
+  reducers; the Eye renders as an opening eyelid; double-confirm reset;
+  Awakening button (gated); overlay queue.
+- Stubs with final API surface: town.js, narrative.js, audio.js.
+
+**Verified (Playwright, real Chromium)**
+- Tap earns; buy Follower works; passive accrual matches rate; save
+  round-trips across reload; 10h absence → offline overlay capped at 8h
+  with correct copy; corrupt save quarantined to `-corrupt` key + "bad
+  dream" notice + fresh state; tabs switch; ?grant/?stage work; rites
+  purchasable; Inquiry fires at maxed Eye, claims followers, floors at 1,
+  shows overlay. No page errors.
+
+**Surprises**
+1. `#overlay { display:flex }` overrode the `hidden` attribute — an
+   invisible full-screen overlay ate every click. (`#overlay[hidden]` fix.)
+2. **Inquiries could never fire:** tickEye decayed before threshold-check,
+   so an Eye pinned at exactly 100 slid under before testing. Fixed +
+   invariant added. This also exposed that Follower-only Inquiry claims are
+   toothless late-game → Inquiries now seize Dread too (see DECISIONS.md).
+
+**Next**
+- Phase 3: `src/town.js` — build Marrow Bay (31 buildings, 5 stage
+  treatments per docs/TOWN.md).
+
 ## 2026-08-15 — Phase 0 complete: concept, economy, harness
 
 **Shipped**

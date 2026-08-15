@@ -91,6 +91,7 @@ const EYE_MAX = 100;
 const EYE_BASE_DECAY = 0.2;           // per second
 const EYE_AFTER_INQUIRY = 35;
 const INQUIRY_BASE_CLAIM = 0.25;      // fraction of Followers claimed
+const INQUIRY_DREAD_FACTOR = 0.4;     // dread claim = claim fraction * this
 const INQUIRY_FLOOR = 1;              // never drop Followers below this
 
 /* ----------------------------------------------------------- corruption -- */
@@ -255,8 +256,11 @@ function buyNotable(state, notableId) {
 // report object when one fires (UI shows it), else null.
 function tickEye(state, dt) {
   const fx = riteFx(state);
-  state.eye = Math.max(0, state.eye - EYE_BASE_DECAY * fx.eyeDecayMult * dt);
+  // Threshold check BEFORE decay: purchases pin the Eye at exactly EYE_MAX,
+  // so decay-first would walk it back below max and the Inquiry could never
+  // fire (real bug, caught by the Phase 2 browser check).
   if (state.eye >= EYE_MAX) return fireInquiry(state, fx);
+  state.eye = Math.max(0, state.eye - EYE_BASE_DECAY * fx.eyeDecayMult * dt);
   return null;
 }
 
@@ -265,9 +269,14 @@ function fireInquiry(state, fx) {
   const before = state.tiers.follower;
   const claimed = Math.min(before - INQUIRY_FLOOR, Math.ceil(before * fx.inquiryClaim));
   if (claimed > 0) state.tiers.follower -= claimed;
+  // Followers alone are toothless late-game (sim-proven: optimal play ate 18
+  // Inquiries rather than buy one Veil) — so the county also seizes Dread.
+  const dreadClaimed = state.dread * fx.inquiryClaim * INQUIRY_DREAD_FACTOR;
+  state.dread -= dreadClaimed;
   state.eye = EYE_AFTER_INQUIRY;
   state.inquiries += 1;
-  return { claimed: Math.max(0, claimed), remaining: state.tiers.follower };
+  return { claimed: Math.max(0, claimed), remaining: state.tiers.follower,
+           dreadClaimed };
 }
 
 function canAwaken(state) {
@@ -293,7 +302,8 @@ function offlineDread(state, elapsedSeconds) {
 /* -------------------------------------------------------------- exports -- */
 const CONGREGATION_BALANCE = {
   TIERS, TIER_INDEX, TIER_EYE, RITES, RITE_BY_ID, NOTABLES, NOTABLE_BY_ID,
-  EYE_MAX, EYE_BASE_DECAY, EYE_AFTER_INQUIRY, INQUIRY_BASE_CLAIM, INQUIRY_FLOOR,
+  EYE_MAX, EYE_BASE_DECAY, EYE_AFTER_INQUIRY, INQUIRY_BASE_CLAIM,
+  INQUIRY_DREAD_FACTOR, INQUIRY_FLOOR,
   CORRUPTION_THRESHOLDS, AWAKENING_COST, GLYPH_LIFETIME_UNIT, GLYPH_MULT,
   OFFLINE_CAP_HOURS, OFFLINE_EFFICIENCY,
   newState, riteFx, notableMult, glyphMult, globalMult,
@@ -301,6 +311,9 @@ const CONGREGATION_BALANCE = {
   earn, canBuyTier, buyTier, canBuyRite, buyRite, canBuyNotable, buyNotable,
   tickEye, fireInquiry, canAwaken, awaken, offlineDread,
 };
+
+// Browser alias: every other classic script refers to the economy as BAL.
+var BAL = CONGREGATION_BALANCE;
 
 if (typeof module !== "undefined" && module.exports) {
   module.exports = CONGREGATION_BALANCE;
